@@ -1,0 +1,227 @@
+/* ========================================================
+   FILE CSS RIÊNG: AboutUs.css
+   Theme: Tối giản Trắng Đen, Hiện đại
+   ======================================================== */
+
+/* Container chính của nội dung, chiếm 70% chiều ngang */
+.about-main {
+    padding-top: 120px;
+    /* Tránh bị header đè */
+    min-height: 100vh;
+    background-color: #050505;
+}
+
+.about-container {
+    max-width: 70%;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.about-title {
+    font-size: 3rem;
+    font-weight: 800;
+    letter-spacing: 5px;
+    margin-bottom: 10px;
+    color: #fff;
+    text-transform: uppercase;
+}
+
+.about-subtitle {
+    color: #888;
+    font-size: 1.1rem;
+    margin-bottom: 60px;
+}
+
+/* TEAM GRID: Hiển thị danh sách thành viên */
+.team-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 40px;
+    margin-bottom: 100px;
+}
+
+/* TEAM CARD: Layout bên ngoài (Hình trên, Tên dưới) */
+.team-card {
+    background: #111;
+    border: 1px solid #222;
+    border-radius: 15px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+}
+
+.team-card:hover {
+    transform: translateY(-15px);
+    border-color: #ff0000;
+    box-shadow: 0 20px 40px rgba(255, 0, 0, 0.1);
+}
+
+.card-image {
+    width: 100%;
+    aspect-ratio: 1/1;
+    overflow: hidden;
+}
+
+.card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: grayscale(100%);
+    /* Hiệu ứng đen trắng */
+    transition: 0.5s ease;
+}
+
+.team-card:hover .card-image img {
+    filter: grayscale(0%);
+    /* Hiện màu khi hover */
+    transform: scale(1.1);
+}
+
+.card-info {
+    padding: 25px;
+}
+
+.card-info h3 {
+    font-size: 1.4rem;
+    margin-bottom: 5px;
+    color: #fff;
+    letter-spacing: 1px;
+}
+
+.card-info p {
+    color: #ff0000;
+    /* Màu nhấn */
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+/* MODAL: Layout bên trong */
+.member-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.95);
+    display: none;
+    /* Ẩn mặc định */
+    justify-content: center;
+    align-items: center;
+    z-index: 1001;
+    backdrop-filter: blur(10px);
+}
+
+.modal-content {
+    width: 800px;
+    max-width: 90%;
+    background: #111;
+    border: 1px solid #333;
+    border-radius: 20px;
+    position: relative;
+    padding: 60px;
+    animation: slideUp 0.5s ease;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(50px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Nút thoát (Mũi tên bên góc trái) */
+.close-modal {
+    position: absolute;
+    top: 30px;
+    left: 30px;
+    background: transparent;
+    border: 1px solid #444;
+    color: #fff;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    font-size: 20px;
+    cursor: pointer;
+    transition: 0.3s;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.close-modal:hover {
+    background: #ff0000;
+    border-color: #ff0000;
+    transform: translateX(-5px);
+}
+
+/* Layout bên trong modal (Góc trái hình, kế bên tên, dưới mô tả) */
+.modal-top {
+    display: flex;
+    gap: 40px;
+    align-items: center;
+    margin-bottom: 40px;
+}
+
+.modal-image {
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 4px solid #ff0000;
+    flex-shrink: 0;
+}
+
+.modal-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.modal-header-info h2 {
+    font-size: 2.5rem;
+    color: #fff;
+    margin-bottom: 10px;
+}
+
+.role-tag {
+    display: inline-block;
+    padding: 5px 15px;
+    background: #ff0000;
+    color: #fff;
+    font-size: 0.9rem;
+    font-weight: bold;
+    border-radius: 5px;
+}
+
+.modal-description h3 {
+    color: #fff;
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+    border-left: 4px solid #ff0000;
+    padding-left: 15px;
+}
+
+.modal-description p {
+    color: #aaa;
+    line-height: 1.8;
+    font-size: 1.1rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .modal-top {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .modal-content {
+        padding: 40px 20px;
+    }
+}

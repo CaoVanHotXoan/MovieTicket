@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đặt Vé - TEAM BẤT ỔN</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="Booking.css">
+    <link rel="stylesheet" href="../Payment.css">
+</head>
+<body class="booking-page">
+    <!-- HEADER ĐẶT VÉ -->
+    <header class="booking-header">
+        <button id="backBtn" class="back-btn">
+            <i class="fa-solid fa-arrow-left"></i> Quay lại
+        </button>
+        <div class="header-title">CHỌN GHẾ</div>
+    </header>
+
+    <!-- THANH TIẾN ĐỘ QUY TRÌNH ĐẶT VÉ (BƯỚC 1: ĐẶT VÉ ĐANG HOẠT ĐỘNG) -->
+    <div class="progress-container">
+        <div class="progress-bar-steps">
+            <div class="progress-step active" id="step-booking">
+                <span class="step-icon"><i class="fa-solid fa-chair"></i></span>
+                <span class="step-label">1. Chọn Ghế</span>
+            </div>
+            <div class="progress-line"></div>
+            <div class="progress-step" id="step-combo">
+                <span class="step-icon"><i class="fa-solid fa-utensils"></i></span>
+                <span class="step-label">2. Chọn Combo</span>
+            </div>
+            <div class="progress-line"></div>
+            <div class="progress-step" id="step-payment">
+                <span class="step-icon"><i class="fa-solid fa-credit-card"></i></span>
+                <span class="step-label">3. Thanh Toán</span>
+            </div>
+        </div>
+    </div>
+
+    <main class="booking-container">
+        <!-- KHU VỰC SƠ ĐỒ GHẾ -->
+        <section class="seat-map-section">
+            <div class="zoom-controls">
+                <button id="zoomIn"><i class="fa-solid fa-plus"></i></button>
+                <button id="zoomOut"><i class="fa-solid fa-minus"></i></button>
+            </div>
+            
+            <div class="seat-map-wrapper">
+                <div class="seat-map" id="seatMap">
+                    <div class="screen-box">MÀN HÌNH</div>
+                    <div class="seat-grid" id="seatGrid">
+                        <!-- Sẽ được JS render -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- CHÚ THÍCH (LEGEND): Sẽ được JS tải động từ SQL Server để đồng bộ hoàn hảo hình dạng/màu sắc với sơ đồ ghế -->
+            <div class="seat-legend" id="seatLegend">
+                <!-- Sẽ được Javascript render động từ CSDL -->
+            </div>
+        </section>
+    </main>
+
+    <!-- THANH THÀNH TIỀN (FOOTER) -->
+    <footer class="booking-footer">
+        <div class="footer-info">
+            <div class="movie-brief">
+                <span class="age-tag" id="fAge">T13</span>
+                <div class="text-group">
+                    <h3 id="fMovieTitle">NGƯỜI NHỆN: DU HÀNH VŨ TRỤ NHỆN</h3>
+                    <p id="fDateTime">Thứ Tư, 19/04 - 15:15 ~ 17:35</p>
+                </div>
+            </div>
+            <div class="hall-info">
+                <span>Phòng chiếu</span>
+                <strong id="fHall">P01</strong>
+            </div>
+            <div class="seats-info">
+                <span>Chỗ ngồi</span>
+                <strong id="fSeats">-</strong>
+            </div>
+            <div class="total-price">
+                <span>Tạm tính</span>
+                <strong id="fPrice">0 VND</strong>
+            </div>
+        </div>
+        <button class="book-btn" id="confirmBooking">ĐẶT VÉ</button>
+    </footer>
+
+    <script src="../script.js"></script>
+    <script src="../api.js"></script>
+</body>
+</html>
