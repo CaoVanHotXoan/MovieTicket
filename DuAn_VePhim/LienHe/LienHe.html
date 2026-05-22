@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liên Hệ - TEAM BẤT ỔN</title>
+    <!-- CSS dùng chung: Header & Footer -->
+    <link rel="stylesheet" href="../HeaderFooter.css">
+    <!-- CSS riêng trang Liên hệ -->
+    <link rel="stylesheet" href="LienHe.css">
+    <!-- Font Awesome: icon lịch, mũi tên dropdown -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <!-- ========== HEADER DÙNG CHUNG ========== -->
+    <header class="main-header header-static">
+        <div class="header-container">
+            <div class="header-left">
+                <a href="../index.html" class="logo">TEAM BẤT ỔN</a>
+            </div>
+
+            <nav class="header-center">
+                <ul class="nav-menu">
+                    <li><a href="../index.html">TRANG CHỦ</a></li>
+                    <li><a href="../Phim/Movies.html">PHIM</a></li>
+                    <li><a href="../LichSu/History.html">LỊCH SỬ</a></li>
+                    <li class="dropdown">
+                        <a href="#" class="active">INFORMATION <i class="fa-solid fa-chevron-down nav-arrow"></i></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="../Information_AboutUs/AboutUs.html">ABOUT US</a></li>
+                            <li><a href="LienHe.html">LIÊN HỆ</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="header-right">
+                <div class="search-box">
+                    <input type="text" class="search-txt" placeholder="Tìm kiếm phim...">
+                    <a href="#" class="search-btn"><i class="fa-solid fa-magnifying-glass"></i></a>
+                    <div class="search-suggestions" id="searchSuggestions"></div>
+                </div>
+                <a href="../Login/Login.html" class="login-icon" title="Đăng nhập"><i class="fa-solid fa-user"></i></a>
+            </div>
+        </div>
+    </header>
+
+    <!-- ========== NỘI DUNG CHÍNH ========== -->
+    <main class="contact-main">
+        <section class="contact-container">
+            <h1 class="contact-title">LIÊN HỆ</h1>
+            <p class="contact-subtitle">Ứng tuyển làm việc hoặc liên hệ bộ phận chăm sóc khách hàng</p>
+
+            <!-- Menu chuyển tab: Ứng tuyển / CSKH -->
+            <div class="tab-menu" role="tablist">
+                <button type="button" class="tab-btn active" data-tab="ung-tuyen" role="tab" aria-selected="true">
+                    ỨNG TUYỂN
+                </button>
+                <button type="button" class="tab-btn" data-tab="cskh" role="tab" aria-selected="false">
+                    CSKH
+                </button>
+            </div>
+
+            <!-- ===== TAB ỨNG TUYỂN ===== -->
+            <div id="panel-ung-tuyen" class="tab-panel active" role="tabpanel">
+                <div class="panel-grid">
+                    <!-- Cột trái: Form ứng tuyển -->
+                    <form id="form-ung-tuyen" class="contact-form" novalidate>
+                        <div class="form-group">
+                            <label for="ut-ten">Họ và tên</label>
+                            <input type="text" id="ut-ten" name="ten" placeholder="Nhập họ và tên" required>
+                        </div>
+
+                        <!-- Ngày sinh + icon lịch bấm để mở date picker -->
+                        <div class="form-group">
+                            <label for="ut-ngaysinh">Ngày tháng năm sinh</label>
+                            <div class="input-with-icon">
+                                <input type="date" id="ut-ngaysinh" name="ngaySinh" required>
+                                <button type="button" class="icon-btn" id="btn-open-date" title="Chọn ngày">
+                                    <i class="fa-regular fa-calendar"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="ut-email">Địa chỉ email</label>
+                            <input type="email" id="ut-email" name="email" placeholder="example@email.com" required>
+                        </div>
+
+                        <!-- Dropdown tùy chỉnh: Vị trí ứng tuyển -->
+                        <div class="form-group">
+                            <label>Vị trí ứng tuyển</label>
+                            <div class="custom-select" id="select-vi-tri">
+                                <button type="button" class="select-trigger" aria-haspopup="listbox">
+                                    <span class="select-value">Chọn vị trí</span>
+                                    <i class="fa-solid fa-chevron-down"></i>
+                                </button>
+                                <ul class="select-options" role="listbox">
+                                    <li data-value="Nhân viên part-time">Nhân viên part-time</li>
+                                    <li data-value="Nhân viên chính thức">Nhân viên chính thức</li>
+                                    <li data-value="Quản lý">Quản lý</li>
+                                </ul>
+                                <input type="hidden" id="ut-vi-tri" name="viTri" required>
+                            </div>
+                        </div>
+
+                        <!-- Chọn file CV -->
+                        <div class="form-group">
+                            <label for="ut-file">Hồ sơ đính kèm (PDF, DOC)</label>
+                            <div class="file-upload">
+                                <input type="file" id="ut-file" name="file" accept=".pdf,.doc,.docx">
+                                <span class="file-name" id="file-name-display">Chưa chọn file</span>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-submit">GỬI HỒ SƠ</button>
+                    </form>
+
+                    <!-- Cột phải: Google Maps -->
+                    <div class="map-wrapper">
+                        <h3>Địa điểm ứng tuyển</h3>
+                        <iframe
+                            title="Bản đồ địa điểm ứng tuyển"
+                            src="https://maps.google.com/maps?q=123+Nguy%E1%BB%85n+V%C4%83n+C%E1%BB%AB,+Qu%E1%BA%ADn+5,+TP.HCM&hl=vi&z=16&output=embed"
+                            allowfullscreen=""
+                            loading="lazy"
+                            referrerpolicy="no-referrer-when-downgrade">
+                        </iframe>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== TAB CSKH ===== -->
+            <div id="panel-cskh" class="tab-panel" role="tabpanel" hidden>
+                <form id="form-cskh" class="contact-form contact-form--single" novalidate>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="cskh-ten">Họ và tên</label>
+                            <input type="text" id="cskh-ten" name="ten" placeholder="Nhập họ và tên" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="cskh-email">Địa chỉ email</label>
+                            <input type="email" id="cskh-email" name="email" placeholder="example@email.com" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="cskh-sdt">Số điện thoại</label>
+                            <input type="tel" id="cskh-sdt" name="sdt" placeholder="09xxxxxxxx" required>
+                        </div>
+
+                        <!-- Dropdown: Loại hỗ trợ -->
+                        <div class="form-group">
+                            <label>Hỗ trợ</label>
+                            <div class="custom-select" id="select-ho-tro">
+                                <button type="button" class="select-trigger" aria-haspopup="listbox">
+                                    <span class="select-value">Chọn loại hỗ trợ</span>
+                                    <i class="fa-solid fa-chevron-down"></i>
+                                </button>
+                                <ul class="select-options" role="listbox">
+                                    <li data-value="Hỗ trợ vé">Hỗ trợ vé</li>
+                                    <li data-value="Hỗ trợ tìm đồ">Hỗ trợ tìm đồ</li>
+                                </ul>
+                                <input type="hidden" id="cskh-hotro" name="hoTro" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="cskh-mahoadon">Mã hóa đơn</label>
+                        <input type="text" id="cskh-mahoadon" name="maHoaDon" placeholder="Nhập mã hóa đơn (nếu có)">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="cskh-noidung">Nội dung cần hỗ trợ</label>
+                        <textarea id="cskh-noidung" name="noiDung" rows="5" placeholder="Mô tả chi tiết vấn đề..." required></textarea>
+                    </div>
+
+                    <button type="submit" class="btn-submit">GỬI YÊU CẦU</button>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <!-- ========== FOOTER DÙNG CHUNG ========== -->
+    <footer class="main-footer">
+        <div class="footer-content">
+            <div class="footer-logo-section">
+                <a href="../index.html" class="footer-logo">TEAM BẤT ỔN</a>
+                <p>Khám phá thế giới điện ảnh đẳng cấp cùng chúng tôi.</p>
+            </div>
+            <div class="footer-links-section">
+                <h3>CHÍNH SÁCH</h3>
+                <ul>
+                    <li><a href="#">Điều khoản sử dụng</a></li>
+                    <li><a href="#">Chính sách bảo mật</a></li>
+                    <li><a href="#">Câu hỏi thường gặp</a></li>
+                </ul>
+            </div>
+            <div class="footer-contact-section">
+                <h3><a href="LienHe.html">LIÊN HỆ</a></h3>
+                <p><i class="fa-solid fa-envelope"></i> contact@teambat.on</p>
+                <p><i class="fa-solid fa-phone"></i> 1900 1234</p>
+                <p><i class="fa-solid fa-location-dot"></i> 123 Nguyễn Văn Cừ, Q.5, TP.HCM</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 TEAM BẤT ỔN. Đã đăng ký bản quyền.</p>
+        </div>
+    </footer>
+
+    <!-- JS riêng trang Liên hệ -->
+    <script src="LienHe.js"></script>
+    <!-- JS chung: tìm kiếm header -->
+    <script src="../script.js"></script>
+</body>
+
+</html>
