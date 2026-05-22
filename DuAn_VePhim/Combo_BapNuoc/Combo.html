@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chọn Combo - TEAM BẤT ỔN</title>
+    <!-- Font Awesome dùng chung cho toàn dự án -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Cấu hình CSS của trang Chọn Combo -->
+    <link rel="stylesheet" href="Combo.css">
+    <!-- Link CSS modal thanh toán có sẵn -->
+    <link rel="stylesheet" href="../Payment.css">
+</head>
+<body class="combo-page">
+
+    <!-- HEADER CHỌN COMBO -->
+    <header class="booking-header">
+        <button id="backToSeatsBtn" class="back-btn">
+            <i class="fa-solid fa-arrow-left"></i> Quay lại
+        </button>
+        <div class="header-title">CHỌN COMBO BẮP NƯỚC</div>
+    </header>
+
+    <!-- THANH TIẾN ĐỘ QUY TRÌNH ĐẶT VÉ (BƯỚC 2: CHỌN COMBO ĐANG HOẠT ĐỘNG) -->
+    <div class="progress-container">
+        <div class="progress-bar-steps">
+            <div class="progress-step completed" id="step-booking">
+                <span class="step-icon"><i class="fa-solid fa-chair"></i></span>
+                <span class="step-label">1. Chọn Ghế</span>
+            </div>
+            <div class="progress-line completed"></div>
+            <div class="progress-step active" id="step-combo">
+                <span class="step-icon"><i class="fa-solid fa-utensils"></i></span>
+                <span class="step-label">2. Chọn Combo</span>
+            </div>
+            <div class="progress-line"></div>
+            <div class="progress-step" id="step-payment">
+                <span class="step-icon"><i class="fa-solid fa-credit-card"></i></span>
+                <span class="step-label">3. Thanh Toán</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- HỘP ĐẾM NGƯỢC THỜI GIAN GIỮ GHẾ -->
+    <div class="timer-banner">
+        <div class="timer-box">
+            <i class="fa-regular fa-clock timer-icon"></i>
+            <span>Thời gian giữ ghế còn lại: </span>
+            <strong id="countdownTimer">05:00</strong>
+        </div>
+    </div>
+
+    <!-- NỘI DUNG CHÍNH CỦA TRANG -->
+    <main class="combo-container">
+        <!-- PHẦN DANH SÁCH COMBO (BÊN TRÁI) -->
+        <section class="combo-list-section">
+            <h2 class="section-title">DANH SÁCH COMBO NỔI BẬT</h2>
+            <div class="combo-grid" id="comboGrid">
+                <!-- Sẽ được JS render động -->
+            </div>
+        </section>
+
+        <!-- PHẦN TÓM TẮT ĐƠN HÀNG & THÔNG TIN VÉ (BÊN PHẢI) -->
+        <aside class="booking-summary-section">
+            <div class="summary-card">
+                <h2 class="summary-title">TÓM TẮT ĐƠN HÀNG</h2>
+                
+                <!-- Chi tiết phim -->
+                <div class="summary-movie-info">
+                    <h3 id="sMovieTitle">TÊN PHIM ĐANG LOAD...</h3>
+                    <p class="summary-movie-meta">
+                        <span class="age-tag" id="sAge">T18</span>
+                        <span id="sHall">Phòng</span>
+                    </p>
+                    <p class="summary-datetime" id="sDateTime"><i class="fa-regular fa-calendar"></i> Đang tải lịch chiếu...</p>
+                </div>
+
+                <!-- Chi tiết ghế -->
+                <div class="summary-details">
+                    <div class="summary-row">
+                        <span>Ghế đã chọn:</span>
+                        <strong id="sSeats">-</strong>
+                    </div>
+                    <div class="summary-row">
+                        <span>Tiền vé tạm tính:</span>
+                        <strong id="sTicketPrice">0 VND</strong>
+                    </div>
+                </div>
+
+                <!-- Tóm tắt Combo đã chọn -->
+                <div class="summary-combos-selected">
+                    <h4>Combo đã chọn:</h4>
+                    <ul id="selectedCombosList">
+                        <li class="empty-list">Chưa chọn combo nào</li>
+                    </ul>
+                </div>
+
+                <!-- Tổng tiền & Nút xác nhận -->
+                <div class="summary-total-section">
+                    <div class="total-row">
+                        <span>TỔNG CỘNG:</span>
+                        <strong id="sTotalPrice" class="grand-total">0 VND</strong>
+                    </div>
+                    <button class="confirm-combos-btn" id="confirmCombosBtn">XÁC NHẬN THANH TOÁN</button>
+                </div>
+            </div>
+        </aside>
+    </main>
+
+    <!-- MODAL THANH TOÁN TÍCH HỢP TỪ BOOKING.HTML SANG -->
+    <div class="payment-overlay" id="paymentOverlay">
+        <div class="payment-container">
+            <i class="fa-solid fa-xmark close-payment" id="closePayment"></i>
+            
+            <div class="payment-left">
+                <div class="movie-header">
+                    <span class="payment-age-tag" id="pAge">T18</span>
+                    <h2 class="payment-movie-name" id="pMovieTitle">-</h2>
+                </div>
+                
+                <div class="order-details">
+                    <div class="detail-item">
+                        <label>Thời gian & Ngày chiếu</label>
+                        <span id="pDateTime">-</span>
+                    </div>
+                    <div class="detail-item">
+                        <label>Rạp chiếu</label>
+                        <span>CGV Vincom Biên Hòa (Đồng Nai)</span>
+                    </div>
+                    <div class="detail-item">
+                        <label>Phòng chiếu & Chỗ ngồi</label>
+                        <span>Phòng <strong id="pHall">-</strong> | Ghế: <strong id="pSeats">-</strong></span>
+                    </div>
+                    <div class="detail-item" id="pCombosSummarySection">
+                        <label>Combo đã chọn</label>
+                        <span id="pCombosListText" style="font-size: 14px; color: #ccc;">Không chọn combo</span>
+                    </div>
+                </div>
+
+                <div class="total-amount-section">
+                    <div class="total-label">TỔNG TIỀN THANH TOÁN (VÉ + COMBO)</div>
+                    <div class="total-value" id="pPrice">0 VND</div>
+                </div>
+            </div>
+
+            <div class="payment-right">
+                <h3 class="payment-title">CHỌN PHƯƠNG THỨC THANH TOÁN</h3>
+                <div class="bank-grid" id="bankGrid">
+                    <!-- Sẽ được render bằng JS từ API -->
+                </div>
+                <button class="pay-now-btn" id="payNowBtn" disabled>THANH TOÁN</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script chung của dự án -->
+    <script src="../script.js"></script>
+    <!-- Script gọi API -->
+    <script src="../api.js"></script>
+    <!-- Script logic chọn Combo và tích hợp thanh toán -->
+    <script src="Combo.js"></script>
+</body>
+</html>

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TEAM BẤT ỔN - Chi Tiết Phim</title>
+    <!-- Giao diện Footer và Header từ file chung -->
+    <link rel="stylesheet" href="../HeaderFooter.css">
+    <link rel="stylesheet" href="MovieDetail.css">
+    <link rel="stylesheet" href="MovieComment.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <!-- HEADER -->
+    <header class="main-header">
+        <div class="header-container">
+            <div class="header-left">
+                <a href="../index.html" class="logo">TEAM BẤT ỔN</a>
+            </div>
+            <nav class="header-center">
+                <ul class="nav-menu">
+                    <li><a href="../index.html" class="active">TRANG CHỦ</a></li>
+                    <li><a href="../Phim/Movies.html">PHIM</a></li>
+                    <li><a href="../LichSu/History.html">LỊCH SỬ</a></li>
+                    <li class="dropdown">
+                        <a href="#">INFORMATION <i class="fa-solid fa-chevron-down nav-arrow"></i></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="../Information_AboutUs/AboutUs.html">ABOUT US</a></li>
+                            <li><a href="../LienHe/LienHe.html">LIÊN HỆ</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </nav>
+            <div class="header-right">
+                <div class="search-box">
+                    <input type="text" class="search-txt" placeholder="Tìm kiếm phim...">
+                    <a href="#" class="search-btn"><i class="fa-solid fa-magnifying-glass"></i></a>
+                    <div class="search-suggestions" id="searchSuggestions"></div>
+                </div>
+                <a href="../Login/Login.html" class="login-icon"><i class="fa-solid fa-user"></i></a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- BANNER PHIM (TOÀN BỀ NGANG) -->
+        <section class="movie-banner" id="movieTrailerBtn">
+            <div class="banner-overlay">
+                <div class="play-icon">
+                    <i class="fa-solid fa-play"></i>
+                </div>
+                <p>Xem Trailer</p>
+            </div>
+            <img src="https://images.unsplash.com/photo-1626814026160-2237a95fc5a0?q=80&w=2070&auto=format&fit=crop" alt="Banner Phim">
+        </section>
+
+        <!-- NỘI DUNG CHI TIẾT (CHIẾM 70% BỀ NGANG) -->
+        <div class="detail-container">
+            <div class="movie-main-info">
+                <!-- BÊN TRÁI: POSTER -->
+                <div class="info-left">
+                    <div class="poster-card">
+                        <img src="https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=1925&auto=format&fit=crop" alt="Poster Phim">
+                    </div>
+                </div>
+                <!-- BÊN PHẢI: THÔNG TIN -->
+                <div class="info-right">
+                    <h1 class="movie-title">NGƯỜI NHỆN: DU HÀNH VŨ TRỤ NHỆN</h1>
+                    <div class="meta-tags">
+                        <span class="age-tag">T13</span>
+                        <span class="duration"><i class="fa-regular fa-clock"></i> 140 phút</span>
+                    </div>
+                    <ul class="detail-list">
+                        <li><strong>Ngày phát hành:</strong> 01/06/2026</li>
+                        <li><strong>Quốc gia:</strong> Mỹ</li>
+                        <li><strong>Thể loại:</strong> Hoạt hình, Hành động, Phiêu lưu</li>
+                        <li><strong>Đạo diễn:</strong> Joaquim Dos Santos, Kemp Powers</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- NỘI DUNG PHIM -->
+            <section class="movie-synopsis">
+                <h2 class="section-title">Nội dung phim</h2>
+                <p>Miles Morales trôi dạt qua Đa vũ trụ, nơi anh gặp một nhóm Người Nhện chịu trách nhiệm bảo vệ sự tồn vong của nó. Khi các anh hùng tranh cãi về cách xử lý một mối đe dọa mới, Miles phải định nghĩa lại ý nghĩa của việc trở thành một anh hùng.</p>
+            </section>
+
+            <!-- LỊCH CHIẾU -->
+            <section class="movie-showtimes">
+                <h2 class="section-title">Lịch chiếu</h2>
+                <div class="date-selector" id="dateSelector">
+                    <!-- Sẽ được render bằng JS -->
+                </div>
+                <div class="time-selector" id="timeSelector">
+                    <!-- Sẽ được render bằng JS -->
+                </div>
+            </section>
+
+            <!-- BÌNH LUẬN & ĐÁNH GIÁ PHIM -->
+            <section class="movie-comments">
+                <h2 class="section-title">Bình luận & Đánh giá</h2>
+                
+                <!-- Khung nhập bình luận mới -->
+                <div class="comment-input-box">
+                    <div class="user-info-bar">
+                        <!-- Hiển thị thông tin đăng nhập hoặc tùy chọn nhập tên cho khách -->
+                        <div id="commentUserIdentity" class="user-identity">
+                            <span class="avatar-placeholder"><i class="fa-solid fa-user"></i></span>
+                            <span class="identity-text">Đang bình luận với vai trò: <strong>Khách ẩn danh</strong></span>
+                        </div>
+                        <div id="guestNameContainer" class="guest-name-input-group" style="display: none;">
+                            <label for="guestNickname">Tên hiển thị:</label>
+                            <input type="text" id="guestNickname" placeholder="Nhập biệt danh của bạn..." maxlength="50">
+                        </div>
+                    </div>
+                    
+                    <!-- Đánh giá phim (sao) -->
+                    <div class="rating-input-group">
+                        <span class="rating-label">Đánh giá của bạn:</span>
+                        <div class="star-rating-input" id="starRatingInput">
+                            <i class="fa-regular fa-star" data-value="1"></i>
+                            <i class="fa-regular fa-star" data-value="2"></i>
+                            <i class="fa-regular fa-star" data-value="3"></i>
+                            <i class="fa-regular fa-star" data-value="4"></i>
+                            <i class="fa-regular fa-star" data-value="5"></i>
+                        </div>
+                        <span id="ratingDescription" class="rating-description">Chưa đánh giá</span>
+                    </div>
+
+                    <!-- Nội dung bình luận -->
+                    <div class="textarea-container">
+                        <textarea id="newCommentText" placeholder="Chia sẻ suy nghĩ của bạn về bộ phim này..." maxlength="500"></textarea>
+                    </div>
+
+                    <!-- Nút gửi -->
+                    <div class="comment-submit-bar">
+                        <button id="submitCommentBtn" class="btn-submit-comment">Gửi bình luận <i class="fa-regular fa-paper-plane"></i></button>
+                    </div>
+                </div>
+
+                <!-- Danh sách bình luận -->
+                <div class="comments-list" id="commentsList">
+                    <!-- Bình luận sẽ được sinh tự động bằng Javascript -->
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- TRAILER MODAL -->
+    <div class="trailer-modal" id="trailerModal">
+        <div class="modal-content">
+            <span class="close-modal" id="closeModal">&times;</span>
+            <div class="video-wrapper">
+                <iframe id="trailerIframe" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="main-footer">
+        <div class="footer-content">
+            <div class="footer-logo-section">
+                <a href="../index.html" class="footer-logo">TEAM BẤT ỔN</a>
+                <p>Khám phá thế giới điện ảnh đẳng cấp cùng chúng tôi.</p>
+            </div>
+            <div class="footer-links-section">
+                <h3>CHÍNH SÁCH</h3>
+                <ul>
+                    <li><a href="#">Điều khoản sử dụng</a></li>
+                    <li><a href="#">Chính sách bảo mật</a></li>
+                    <li><a href="#">Câu hỏi thường gặp</a></li>
+                </ul>
+            </div>
+            <div class="footer-contact-section">
+                <h3><a href="../LienHe/LienHe.html">LIÊN HỆ</a></h3>
+                <p><i class="fa-solid fa-envelope"></i> contact@teambat.on</p>
+                <p><i class="fa-solid fa-phone"></i> 1900 1234</p>
+                <p><i class="fa-solid fa-location-dot"></i> 123 Nguyễn Văn Cừ, Q.5, TP.HCM</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 TEAM BẤT ỔN. Đã đăng ký bản quyền.</p>
+        </div>
+    </footer>
+
+    <script src="../script.js"></script>
+    <script src="../api.js"></script>
+    <script src="MovieComment.js" defer></script>
+</body>
+
+</html>
