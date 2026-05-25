@@ -1,16 +1,20 @@
 import axios from 'axios';
-import { createIcons, Clapperboard, Tag, Film, Monitor, Armchair, Calendar, Users, Receipt, CreditCard, LogOut, Plus, Edit, Trash2, Play, X, Sofa, Image } from 'lucide';
+import { createIcons, Clapperboard, Tag, Film, Monitor, Armchair, Calendar, Users, Receipt, CreditCard, LogOut, Plus, Edit, Trash2, Play, X, Sofa, Image, LayoutDashboard } from 'lucide';
+import { setupAdminApi, showToast, showPageLoading, showErrorState, validateForm, apiRequest } from './admin-utils.js';
+import { renderDashboard } from './dashboard.js';
+
+setupAdminApi(axios);
 
 // Cấu hình các icon Lucide sẽ sử dụng trong ứng dụng
 const iconConfig = {
     icons: {
-        Clapperboard, Tag, Film, Monitor, Armchair, Calendar, Users, Receipt, CreditCard, LogOut, Plus, Edit, Trash2, Play, X, Sofa, Image
+        Clapperboard, Tag, Film, Monitor, Armchair, Calendar, Users, Receipt, CreditCard, LogOut, Plus, Edit, Trash2, Play, X, Sofa, Image, LayoutDashboard
     }
 };
 
 // Trạng thái (State) toàn cục của ứng dụng
 const state = {
-    currentPage: 'movies', // Trang hiện tại
+    currentPage: 'dashboard', // Trang hiện tại (dashboard mặc định)
     banners: [],           // Danh sách banners
     movieTypes: [],        // Danh sách thể loại phim
     movies: [],            // Danh sách phim
@@ -37,6 +41,12 @@ const modalBackdrop = document.getElementById('modal-backdrop');
 const modalContent = document.getElementById('modal-content');
 
 // --- CÁC HÀM TIỆN ÍCH (UTILS) ---
+
+/** Định dạng tiền VND không thập phân */
+function formatVND(amount) {
+    const n = Math.round(Number(amount) || 0);
+    return n.toLocaleString('vi-VN') + 'đ';
+}
 
 /**
  * Hiển thị cửa sổ Modal với nội dung HTML tùy chỉnh
@@ -137,16 +147,14 @@ const formatVnd = (value) => {
  * Hàm chính điều phối việc hiển thị nội dung tùy theo trang hiện tại trong state
  */
 async function renderPage() {
-    // Hiển thị hiệu ứng đường tròn xoay (spinner) trong khi chờ dữ liệu
-    appElement.innerHTML = `
-        <div class="flex justify-center items-center h-64">
-            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-600"></div>
-        </div>
-    `;
+    showPageLoading(appElement);
 
     try {
         // Tùy theo trang mà gọi hàm render tương ứng
         switch (state.currentPage) {
+            case 'dashboard':
+                await renderDashboard(appElement, { formatVND, createIcons, iconConfig });
+                break;
             case 'banners': await renderBanners(); break;
             case 'movies': await renderMovies(); break;
             case 'movie-types': await renderMovieTypes(); break;
@@ -162,9 +170,12 @@ async function renderPage() {
                 appElement.innerHTML = `<div class="p-8 text-center text-gray-500">Chức năng ${state.currentPage} đang được cập nhật...</div>`;
         }
     } catch (err) {
-        appElement.innerHTML = `<div class="p-8 text-center text-red-500">Lỗi: ${err.message}</div>`;
+        showErrorState(appElement, err.message, () => renderPage());
+        showToast(err.message, 'error');
     }
 }
+
+window.validateForm = validateForm;
 // --- QUẢN LÝ PHIM (MOVIES SECTION) ---
 
 /**
@@ -1571,7 +1582,7 @@ async function renderInvoices() {
                                 <td class="px-6 py-4 font-bold text-amber-700">#${i.MaHoaDon}</td>
                                 <td class="px-6 py-4 font-medium text-gray-700">${i.TenKhachHang}</td>
                                 <td class="px-6 py-4 text-gray-500 font-medium">${new Date(i.NgayDat).toLocaleString('vi-VN')}</td>
-                                <td class="px-6 py-4 font-bold text-red-600">${i.TongTien.toLocaleString()}đ</td>
+                                <td class="px-6 py-4 font-bold text-red-600">${formatVND(i.TongTien)}</td>
                                 <td class="px-6 py-4 text-right space-x-1">
                                     <button onclick="window.viewInvoiceDetail(${i.MaHoaDon})" class="text-blue-600 hover:bg-blue-50 p-2 rounded-full transition-colors" title="Xem Chi Tiết">
                                         <i data-lucide="receipt" class="w-4 h-4"></i>
@@ -1815,37 +1826,90 @@ window.deleteInvoice = async (id) => {
 
 window.viewInvoiceDetail = async (id) => {
     try {
-        const res = await axios.get(`/api/invoice-details/${id}`);
-        const details = res.data;
+        const [detailRes, invRes] = await Promise.all([
+            axios.get(`/api/invoice-details/${id}`),
+            axios.get('/api/invoices')
+        ]);
+        const details = detailRes.data;
+        const invoice = (Array.isArray(invRes.data) ? invRes.data : []).find(i => i.MaHoaDon == id);
+        const tickets = details.filter(d => d.MaGhe);
+        const combos = details.filter(d => d.MaSP);
+
+        const formatTime = (t) => {
+            if (!t) return '';
+            const s = t.toString();
+            return s.includes('T') ? s.substring(11, 16) : s.substring(0, 5);
+        };
+
+        const ticketRows = tickets.map(d => {
+            const showDate = d.NgayChieu ? new Date(d.NgayChieu).toLocaleDateString('vi-VN') : '-';
+            const timeRange = `${formatTime(d.GioBatDau)} - ${formatTime(d.GioKetThuc)}`;
+            return `
+                <div class="bg-gray-50 p-4 rounded-lg border border-gray-100">
+                    <div class="flex justify-between items-start gap-4">
+                        <div class="flex-1">
+                            <p class="text-[10px] font-black text-amber-600 uppercase tracking-widest mb-1">Vé phim #${d.MaCT || '-'}</p>
+                            <h4 class="font-bold text-gray-900 uppercase">${d.TenPhim || 'Phim'}</h4>
+                            <p class="text-sm text-gray-600 mt-1">Phòng: <span class="font-semibold">${d.TenPhong || '-'}</span> | Ghế: <span class="font-bold text-amber-600">${d.SoGhe || '-'}</span></p>
+                            <p class="text-sm text-gray-500">Suất: ${showDate} | ${timeRange}</p>
+                            <p class="text-xs text-gray-400 mt-1">Mã suất: ${d.MaSuat || '-'} | Mã ghế: ${d.MaGhe || '-'}</p>
+                        </div>
+                        <p class="font-bold text-gray-900 whitespace-nowrap">${formatVND(d.GiaVe)}</p>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        const comboRows = combos.map(d => {
+            const unitPrice = Number(d.GiaSP || d.GiaNiemYet) || 0;
+            const qty = Number(d.SoLuongSP) || 0;
+            const lineTotal = unitPrice * qty;
+            return `
+                <div class="bg-amber-50/50 p-4 rounded-lg border border-amber-100">
+                    <div class="flex justify-between items-start gap-4">
+                        <div class="flex-1">
+                            <p class="text-[10px] font-black text-amber-700 uppercase tracking-widest mb-1">Sản phẩm #${d.MaCT || '-'}</p>
+                            <h4 class="font-bold text-gray-900">${d.TenSP || 'Combo / Bắp nước'}</h4>
+                            <p class="text-sm text-gray-600 mt-1">Số lượng: <span class="font-bold">${qty}</span> × ${formatVND(unitPrice)}</p>
+                            <p class="text-xs text-gray-400 mt-1">Mã SP: ${d.MaSP || '-'}</p>
+                        </div>
+                        <p class="font-bold text-gray-900 whitespace-nowrap">${formatVND(lineTotal)}</p>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        const lineSum = details.reduce((sum, d) => {
+            if (d.MaGhe) return sum + (Number(d.GiaVe) || 0);
+            if (d.MaSP) {
+                const unit = Number(d.GiaSP || d.GiaNiemYet) || 0;
+                return sum + unit * (Number(d.SoLuongSP) || 0);
+            }
+            return sum;
+        }, 0);
+        const total = invoice?.TongTien != null ? Number(invoice.TongTien) : lineSum;
+
         showModal(`
-            <div class="p-8">
+            <div class="p-8 max-h-[80vh] overflow-y-auto">
                 <div class="border-b-2 border-dashed border-gray-200 pb-4 mb-4 text-center">
                     <h3 class="text-2xl font-black text-gray-900 uppercase">Chi Tiết Hóa Đơn #${id}</h3>
-                    <p class="text-gray-500 text-sm mt-1">CINEMA MANAGER RECEIPT</p>
+                    <p class="text-gray-500 text-sm mt-1">CINEMA MANAGER — Bảng ChiTietHoaDon</p>
+                    ${invoice ? `<p class="text-xs text-gray-400 mt-2">Khách: ${invoice.TenKhachHang || '-'} | Thanh toán: ${invoice.PhuongThuc || '-'}</p>` : ''}
                 </div>
-                <div class="space-y-4">
-                    ${details.map(d => `
-                        <div class="bg-gray-50 p-4 rounded-lg flex justify-between items-center border border-gray-100">
-                            <div>
-                                <h4 class="font-bold text-gray-900 uppercase">${d.TenPhim}</h4>
-                                <p class="text-sm text-gray-600">Ghế: <span class="font-bold text-amber-600">${d.SoGhe}</span></p>
-                                <p class="text-[10px] text-gray-400">Ghế: ${d.SoGhe || 'N/A'}</p>
-                            </div>
-                            <div class="text-right">
-                                <p class="font-bold text-gray-900">${d.GiaVe.toLocaleString()}đ</p>
-                            </div>
-                        </div>
-                    `).join('')}
+                <div class="space-y-3">
+                    ${ticketRows || '<p class="text-gray-500 text-sm text-center py-4">Không có dòng vé phim.</p>'}
+                    ${comboRows}
+                    ${details.length === 0 ? '<p class="text-gray-500 text-sm text-center py-4">Hóa đơn chưa có chi tiết.</p>' : ''}
                 </div>
                 <div class="mt-8 border-t-2 border-dashed border-gray-200 pt-4 flex justify-between items-center">
                     <span class="text-lg font-bold text-gray-600">Tổng cộng</span>
-                    <span class="text-2xl font-black text-red-600">${details.reduce((sum, d) => sum + d.GiaVe, 0).toLocaleString()}đ</span>
+                    <span class="text-2xl font-black text-red-600">${formatVND(total)}</span>
                 </div>
                 <div class="mt-8 flex justify-center">
                     <button onclick="window.hideModal()" class="bg-gray-900 text-white px-8 py-2 rounded-full hover:bg-gray-800 transition-colors uppercase font-bold tracking-widest text-sm">Đóng</button>
                 </div>
             </div>
-        `);
+        `, 'max-w-3xl');
     } catch (err) {
         alert('Lỗi tải chi tiết: ' + err.message);
     }
@@ -2189,6 +2253,12 @@ window.deleteProductCategory = async (id) => {
 };
 
 // --- KHỞI TẠO ỨNG DỤNG (APP INITIALIZATION) ---
-// Chạy hàm render trang lần đầu tiên khi ứng dụng tải xong
+document.getElementById('logout-btn')?.addEventListener('click', () => {
+    if (confirm('Thoát hệ thống quản trị và về trang chủ?')) {
+        localStorage.removeItem('currentUser');
+        window.location.href = 'index.html';
+    }
+});
+
 renderPage();
 createIcons(iconConfig);

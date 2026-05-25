@@ -3,6 +3,12 @@
  * Hệ thống xử lý dữ liệu tập trung: Kết nối SQL Server, Đăng nhập, Đăng ký, Đặt vé, Lịch sử, Phim & Tìm kiếm.
  */
 
+/** Định dạng tiền VND (không thập phân) */
+function formatVND(amount) {
+    const n = Math.round(Number(amount) || 0);
+    return n.toLocaleString('vi-VN') + ' đ';
+}
+
 // 1. XỬ LÝ ĐĂNG NHẬP
 function handleLogin() {
     const loginForm = document.getElementById('login-form');
@@ -65,7 +71,7 @@ function handleRegister() {
                 Ten: username, TenDangNhap: username, MatKhau: password,
                 Email: username.includes('@') ? username : "",
                 SDT: !username.includes('@') ? username : "",
-                MaLoaiUser: 2 
+                MaLoaiUser: 2
             };
 
             const response = await fetch('/api/customers', {
@@ -123,18 +129,18 @@ function handleLogout() {
                 if (confirm('Bạn có chắc chắn muốn thoát khỏi tài khoản này không?')) {
                     localStorage.removeItem('currentUser');
                     alert('Đã thoát tài khoản!');
-                    
+
                     // Chú thích: Fix lỗi chuyển hướng sai đường dẫn khi ở trong các thư mục con
                     // Kiểm tra xem trang hiện tại có nằm trong thư mục con hay không (dựa trên pathname)
                     const path = window.location.pathname;
-                    const isSubfolder = path.includes('/Login/') || 
-                                       path.includes('/ChiTietPhim/') ||
-                                       path.includes('/Phim/') ||
-                                       path.includes('/DatVe/') ||
-                                       path.includes('/LichSu/') ||
-                                       path.includes('/Information_AboutUs/') ||
-                                       path.includes('/Profile/');
-                    
+                    const isSubfolder = path.includes('/Login/') ||
+                        path.includes('/ChiTietPhim/') ||
+                        path.includes('/Phim/') ||
+                        path.includes('/DatVe/') ||
+                        path.includes('/LichSu/') ||
+                        path.includes('/Information_AboutUs/') ||
+                        path.includes('/Profile/');
+
                     // Nếu ở thư mục con thì cần ../ để ra ngoài rồi vào Login, nếu ở root thì vào trực tiếp Login/
                     window.location.href = isSubfolder ? '../Login/Login.html' : 'Login/Login.html';
                 }
@@ -147,28 +153,28 @@ function handleLogout() {
 function updateAuthUI() {
     const user = JSON.parse(localStorage.getItem('currentUser'));
     const loginIcon = document.querySelector('.login-icon');
-    
+
     // Xóa nút admin cũ nếu tồn tại để tránh tạo trùng lặp khi hàm này chạy lại nhiều lần
     const oldAdminBtn = document.querySelector('.admin-link-btn');
     if (oldAdminBtn) oldAdminBtn.remove();
-    
+
     if (loginIcon) {
         // Xác định đường dẫn tương đối chính xác đến file admin.html tùy thuộc vào thư mục trang hiện tại
         const pathName = window.location.pathname;
-        const isSubfolder = pathName.includes('/Login/') || 
-                           pathName.includes('/ChiTietPhim/') ||
-                           pathName.includes('/Phim/') ||
-                           pathName.includes('/DatVe/') ||
-                           pathName.includes('/LichSu/') ||
-                           pathName.includes('/Information_AboutUs/') ||
-                           pathName.includes('/Profile/');
+        const isSubfolder = pathName.includes('/Login/') ||
+            pathName.includes('/ChiTietPhim/') ||
+            pathName.includes('/Phim/') ||
+            pathName.includes('/DatVe/') ||
+            pathName.includes('/LichSu/') ||
+            pathName.includes('/Information_AboutUs/') ||
+            pathName.includes('/Profile/');
 
         if (user) {
             // Nếu đã đăng nhập: Đổi title thành tên người dùng và trỏ đến trang cá nhân
             loginIcon.title = `Thông tin cá nhân (${user.Ten})`;
             loginIcon.style.color = '#ff3d49'; // Đổi màu icon sang đỏ để nhận biết
             loginIcon.href = isSubfolder ? '../Profile/Profile.html' : 'Profile/Profile.html';
-            
+
             // KIỂM TRA QUYỀN ADMIN: Nếu tài khoản đăng nhập thuộc loại Admin (MaLoaiUser === 1 hoặc roleName === "Admin")
             const role = user.roleName ? user.roleName.toLowerCase() : '';
             if (role === 'admin' || user.MaLoaiUser === 1) {
@@ -176,12 +182,12 @@ function updateAuthUI() {
                 const adminBtn = document.createElement('a');
                 adminBtn.className = 'admin-link-btn';
                 adminBtn.title = "Trang quản lý hệ thống (Admin)";
-                
+
                 adminBtn.href = isSubfolder ? '../admin.html' : 'admin.html';
-                
+
                 // Sử dụng icon khiên bảo mật Font Awesome cực kỳ chuyên nghiệp
                 adminBtn.innerHTML = '<i class="fa-solid fa-user-shield"></i>';
-                
+
                 // Chèn nút Admin ngay bên trái của icon đăng nhập/đăng xuất
                 loginIcon.parentElement.insertBefore(adminBtn, loginIcon);
             }
@@ -217,7 +223,7 @@ async function loadMovies() {
 }
 
 function renderMovieList(container, movies, tagText) {
-    container.innerHTML = ''; 
+    container.innerHTML = '';
     movies.forEach(movie => {
         const li = document.createElement('li');
         li.className = 'movie-card';
@@ -249,7 +255,7 @@ async function loadBanners() {
     try {
         const response = await fetch('/api/banners');
         const banners = await response.json();
-        
+
         if (banners.length === 0) return;
 
         bannerSlider.innerHTML = '';
@@ -257,7 +263,7 @@ async function loadBanners() {
             const slide = document.createElement('div');
             slide.className = `banner-slide ${index === 0 ? 'active' : ''}`;
             slide.style.backgroundImage = `url('${banner.LinkBanner}')`;
-            
+
             // Nếu có MaPhim, khi click vào banner sẽ trỏ tới trang chi tiết phim đó
             if (banner.MaPhim) {
                 slide.style.cursor = 'pointer';
@@ -273,7 +279,7 @@ async function loadBanners() {
                     }
                 });
             }
-            
+
             bannerSlider.appendChild(slide);
         });
 
@@ -305,9 +311,9 @@ async function loadMovieDetail() {
             document.querySelector('.movie-title').innerText = movie.TenPhim;
             document.querySelector('.movie-synopsis p').innerText = movie.MoTa || "Đang cập nhật nội dung...";
             document.querySelector('.poster-card img').src = movie.HinhAnh;
-            document.querySelector('.movie-banner img').src = movie.HinhAnh; 
+            document.querySelector('.movie-banner img').src = movie.HinhAnh;
             document.querySelector('.duration').innerHTML = `<i class="fa-regular fa-clock"></i> ${movie.ThoiLuong} phút`;
-            
+
             const detailList = document.querySelector('.detail-list');
             const releaseDate = new Date(movie.NgayKhoiChieu).toLocaleDateString('vi-VN');
             detailList.innerHTML = `
@@ -386,7 +392,7 @@ function renderTimes(selectedDate, showtimes, movieTitle) {
         const start = s.GioBatDau ? s.GioBatDau.split(':').slice(0, 2).join(':') : "";
         const end = s.GioKetThuc ? s.GioKetThuc.split(':').slice(0, 2).join(':') : "";
         timeBtn.innerText = end ? `${start} ~ ${end}` : start;
-        
+
         timeBtn.addEventListener('click', () => {
             const selectedShowtime = {
                 MaSuat: s.MaSuat, MaPhim: s.MaPhim, MaPhong: s.MaPhong, TenPhim: movieTitle, TenPhong: s.TenPhong,
@@ -424,44 +430,44 @@ async function loadBookingPage() {
     try {
         // TẢI SONG SONG DỮ LIỆU GHẾ, VÉ ĐÃ ĐẶT VÀ CÁC LOẠI GHẾ TỪ SQL SERVER (Hiệu năng tối ưu)
         const [seatsRes, bookedRes, seatTypesRes] = await Promise.all([
-            fetch('/api/seats'), 
+            fetch('/api/seats'),
             fetch(`/api/booked-seats/${showtime.MaSuat}`),
             fetch('/api/seat-types')
         ]);
         const allSeats = await seatsRes.json();
         const bookedSeatIds = await bookedRes.json();
         const seatTypes = await seatTypesRes.json();
-        
+
         // DỰNG CHÚ THÍCH (LEGEND) DỰ THÀNH DỮ LIỆU THỰC TẾ SQL SERVER CÓ SẴN
         const seatLegend = document.getElementById('seatLegend');
         if (seatLegend) {
             seatLegend.innerHTML = '';
-            
+
             // 1. Thêm chú thích trạng thái cơ bản (Đã đặt, Đang chọn)
             const basicLegends = [
                 { className: 'booked', label: 'Ghế đã đặt' },
                 { className: 'selected', label: 'Ghế bạn chọn' }
             ];
-            
+
             basicLegends.forEach(item => {
                 const legendItem = document.createElement('div');
                 legendItem.className = 'legend-item';
                 legendItem.innerHTML = `<span class="seat-box ${item.className}"></span> ${item.label}`;
                 seatLegend.appendChild(legendItem);
             });
-            
+
             // 2. Thêm các loại ghế thực tế được tải động trực tiếp từ CSDL SQL Server
             seatTypes.forEach(type => {
                 const legendItem = document.createElement('div');
                 legendItem.className = 'legend-item';
-                
+
                 // Xác định class CSS phù hợp để khớp 100% hình dạng với các ghế tương ứng trong sơ đồ
                 let typeClass = 'regular';
                 const seatType = type.TenLoai ? type.TenLoai.toLowerCase() : '';
                 if (seatType.includes('vip')) typeClass = 'vip';
                 else if (seatType.includes('đôi') || seatType.includes('sweetbox')) typeClass = 'sweetbox';
                 else if (seatType.includes('trung tâm') || seatType.includes('central')) typeClass = 'central';
-                
+
                 // Định dạng hiển thị tên và giá tiền của từng loại ghế cho khách hàng dễ nhận diện
                 const priceFormatted = Number(type.GiaGhe).toLocaleString('vi-VN') + ' VND';
                 legendItem.innerHTML = `<span class="seat-box ${typeClass}"></span> ${type.TenLoai} (${priceFormatted})`;
@@ -504,7 +510,7 @@ async function loadBookingPage() {
                 if (seatType.includes('vip')) typeClass = 'vip';
                 else if (seatType.includes('đôi') || seatType.includes('sweetbox')) typeClass = 'sweetbox';
                 else if (seatType.includes('trung tâm') || seatType.includes('central')) typeClass = 'central';
-                
+
                 const isBooked = bookedSeatIds.includes(seat.MaGhe);
                 seatEl.className = `seat ${typeClass} ${isBooked ? 'booked' : ''}`;
                 seatEl.innerText = seat.SoGhe.substring(1);
@@ -531,7 +537,7 @@ async function loadBookingPage() {
         document.getElementById('confirmBooking').addEventListener('click', () => {
             // Chú thích: Kiểm tra xem người dùng đã chọn ghế chưa
             if (selectedSeats.length === 0) { alert("Vui lòng chọn ít nhất một ghế!"); return; }
-            
+
             // Chú thích: Kiểm tra xem người dùng đã đăng nhập chưa
             const currentUser = JSON.parse(localStorage.getItem('currentUser'));
             if (!currentUser) {
@@ -540,7 +546,7 @@ async function loadBookingPage() {
                 window.location.href = '../Login/Login.html';
                 return;
             }
-            
+
             // Chú thích: Lưu thông tin đặt vé tạm thời sang localStorage để xử lý tiếp ở trang Chọn Combo
             const ticketTotal = recalcTotal();
             const pendingBooking = {
@@ -550,11 +556,11 @@ async function loadBookingPage() {
                 currentUser: currentUser      // Người dùng thực hiện đặt vé
             };
             localStorage.setItem('pendingBooking', JSON.stringify(pendingBooking));
-            
+
             // Chú thích: Lưu thời gian hết hạn giữ ghế (5 phút kể từ bây giờ)
             const expiryTime = Date.now() + 5 * 60 * 1000;
             localStorage.setItem('bookingExpiryTime', expiryTime.toString());
-            
+
             // Chú thích: Chuyển hướng người dùng qua trang Chọn Combo Bắp Nước
             window.location.href = '../Combo_BapNuoc/Combo.html';
         });
@@ -573,7 +579,7 @@ async function showPaymentModal(selectedSeats, totalPrice, showtime, user) {
     const overlay = document.getElementById('paymentOverlay');
     if (!overlay) return;
     overlay.style.display = 'flex';
-    
+
     document.getElementById('pMovieTitle').innerText = showtime.TenPhim;
     document.getElementById('pDateTime').innerText = `${showtime.NgayChieu} | ${showtime.GioBatDau} ~ ${showtime.GioKetThuc}`;
     document.getElementById('pHall').innerText = showtime.TenPhong;
@@ -595,7 +601,7 @@ async function showPaymentModal(selectedSeats, totalPrice, showtime, user) {
                 document.querySelectorAll('.bank-item').forEach(el => el.classList.remove('selected'));
                 item.classList.add('selected');
                 // Gán MaThanhToan (ID dạng int) thay vì tên chuỗi để khớp với DB mới cập nhật
-                selectedPayment = p.MaThanhToan; 
+                selectedPayment = p.MaThanhToan;
                 document.getElementById('payNowBtn').disabled = false;
             });
             bankGrid.appendChild(item);
@@ -666,7 +672,7 @@ async function loadHistoryPage() {
                             ${date.toLocaleDateString('vi-VN')} | ${date.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })} | ${inv.PhuongThuc || ''}
                         </div>
                     </div>
-                    <div class="history-amount" style="font-size: 19px; font-weight: 900; color: #fff;">${Number(inv.TongTien).toLocaleString('vi-VN')} VND</div>
+                    <div class="history-amount" style="font-size: 19px; font-weight: 900; color: #fff;">${formatVND(inv.TongTien)}</div>
                     <button type="button" class="btn-view-ticket" title="Xem mã QR vé">
                         <i class="fa-solid fa-qrcode"></i> XEM VÉ
                     </button>
@@ -698,12 +704,12 @@ function parseMaQRFromInvoice(invoice) {
         if (buf.length >= 16) {
             const hex = (n, len) => n.toString(16).padStart(len, '0');
             const r = (a, b) => buf.slice(a, b);
-            const p1 = hex(r(3,4)[0]|(r(2,3)[0]<<8)|(r(1,2)[0]<<16)|(r(0,1)[0]<<24)>>>0, 8);
-            const p2 = hex((r(5,6)[0]<<8)|r(4,5)[0], 4);
-            const p3 = hex((r(7,8)[0]<<8)|r(6,7)[0], 4);
-            const p4 = r(8,10).map(b => hex(b,2)).join('');
-            const p5 = r(10,16).map(b => hex(b,2)).join('');
-            return `${p1.slice(0,8)}-${p1.slice(8)}-${p2}-${p3}-${p4}-${p5}`;
+            const p1 = hex(r(3, 4)[0] | (r(2, 3)[0] << 8) | (r(1, 2)[0] << 16) | (r(0, 1)[0] << 24) >>> 0, 8);
+            const p2 = hex((r(5, 6)[0] << 8) | r(4, 5)[0], 4);
+            const p3 = hex((r(7, 8)[0] << 8) | r(6, 7)[0], 4);
+            const p4 = r(8, 10).map(b => hex(b, 2)).join('');
+            const p5 = r(10, 16).map(b => hex(b, 2)).join('');
+            return `${p1.slice(0, 8)}-${p1.slice(8)}-${p2}-${p3}-${p4}-${p5}`;
         }
     }
 
@@ -769,8 +775,26 @@ async function showHistoryDetail(invoice) {
     modal.style.display = 'flex';
 
     try {
-        const res = await fetch(`/api/invoice-details/${invoice.MaHoaDon}`);
-        const details = await res.json();
+        const [detailsRes, paymentsRes] = await Promise.all([
+            fetch(`/api/invoice-details/${invoice.MaHoaDon}`),
+            fetch('/api/payments')
+        ]);
+        const allItems = await detailsRes.json();
+        const payments = paymentsRes.ok ? await paymentsRes.json() : [];
+        const paymentId = invoice.MaPhuongThuc ?? (Number.isFinite(Number(invoice.PhuongThuc)) ? Number(invoice.PhuongThuc) : null);
+        const payment = payments.find(p => p.MaThanhToan == paymentId)
+            || payments.find(p => p.TenPhuongThuc === invoice.PhuongThuc || p.TenPhuongThuc === invoice.TenPhuongThuc);
+
+        // Phân loại: Dòng nào có MaGhe là vé phim, dòng nào có MaSP là Combo
+        const details = allItems.filter(d => d.MaGhe);
+        const combos = allItems.filter(d => d.MaSP);
+
+        const mCombosEl = document.getElementById('mCombos');
+        if (mCombosEl) {
+            mCombosEl.innerText = combos.length > 0
+                ? combos.map(c => `${c.SoLuongSP}x ${c.TenSP} (${(Number(c.SoLuongSP) * Number(c.GiaSP || c.GiaNiemYet)).toLocaleString('vi-VN')} đ)`).join(', ')
+                : 'Không có';
+        }
 
         if (details.length > 0) {
             const first = details[0];
@@ -785,10 +809,10 @@ async function showHistoryDetail(invoice) {
             document.getElementById('mShowDate').innerHTML = `${new Date(first.NgayChieu).toLocaleDateString('vi-VN')}<br><span style="color: #ff3d49; font-weight: bold;">Thời gian: ${start} - ${end}</span>`;
             document.getElementById('mHall').innerText = first.TenPhong || "Phòng Chiếu";
             document.getElementById('mMovieTitle').innerText = first.TenPhim;
-            document.getElementById('mTotalAmount').innerText = invoice.TongTien.toLocaleString('vi-VN') + ' VND';
-            document.getElementById('mBankName').innerText = invoice.PhuongThuc;
+            document.getElementById('mTotalAmount').innerText = formatVND(invoice.TongTien);
+            document.getElementById('mBankName').innerText = payment?.TenPhuongThuc || invoice.TenPhuongThuc || invoice.PhuongThuc || '-';
             document.getElementById('mSeats').innerText = details.map(d => d.SoGhe).join(', ');
-            
+
             // ĐỔ DỮ LIỆU RẠP CHIẾU VÀ ĐỊA CHỈ (DEMO)
             if (document.getElementById('mCinemaName'))
                 document.getElementById('mCinemaName').innerText = "CGV Vincom Biên Hòa";
@@ -797,8 +821,15 @@ async function showHistoryDetail(invoice) {
 
             const bankIcon = document.getElementById('mBankIcon');
             if (bankIcon) {
-                if (invoice.PhuongThuc.toLowerCase().includes('momo')) bankIcon.src = 'https://upload.wikimedia.org/wikipedia/vi/f/fe/MoMo_Logo.png';
-                else bankIcon.src = 'https://cdn-icons-png.flaticon.com/512/2830/2830284.png';
+                const iconSrc = payment?.HinhAnh || '';
+                if (iconSrc) {
+                    bankIcon.src = iconSrc;
+                    bankIcon.alt = payment.TenPhuongThuc || 'Thanh toán';
+                    bankIcon.style.display = '';
+                } else {
+                    bankIcon.removeAttribute('src');
+                    bankIcon.style.display = 'none';
+                }
             }
         }
     } catch (error) { console.error("Lỗi chi tiết:", error); }
@@ -824,10 +855,10 @@ async function loadMoviesPage() {
             fetch('/api/movies'),
             fetch('/api/movie-types')
         ]);
-        
+
         const allMovies = await moviesRes.json();
         let allGenres = [];
-        
+
         if (genresRes.ok) {
             allGenres = await genresRes.json();
         } else {
@@ -877,7 +908,7 @@ async function loadMoviesPage() {
                 applyFilters();
             }
         });
-        
+
         document.querySelectorAll('.filter-dropdown-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 const content = btn.nextElementSibling;
@@ -978,7 +1009,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // 10. HỖ TRỢ TÍNH TOÁN THỜI GIAN CHO ADMIN
 // Hàm này được gọi từ main.js để tự động tính giờ kết thúc dựa trên giờ bắt đầu và thời lượng phim
-window.calculateEndTime = function(startTimeStr, durationMinutes) {
+window.calculateEndTime = function (startTimeStr, durationMinutes) {
     if (!startTimeStr || !durationMinutes) return "";
     const [hours, minutes] = startTimeStr.split(':').map(Number);
     const date = new Date();

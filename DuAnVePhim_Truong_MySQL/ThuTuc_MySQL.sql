@@ -628,8 +628,8 @@ BEGIN
     -- Liệt kê rõ cột MaQR để API/QR vé luôn nhận được GUID
     SELECT h.MaHoaDon, h.MaKH, h.NgayDat, h.TongTien, h.PhuongThuc, h.MaQR,
            k.Ten AS TenKhachHang,
-           t.TenPhuongThuc AS PhuongThuc,
-           (SELECT TOP 1 p.TenPhim FROM ChiTietHoaDon d JOIN Phim p ON d.MaPhim = p.MaPhim WHERE d.MaHoaDon = h.MaHoaDon) AS TenPhim
+           t.TenPhuongThuc AS TenPhuongThuc,
+           (SELECT p.TenPhim FROM ChiTietHoaDon d JOIN Phim p ON d.MaPhim = p.MaPhim WHERE d.MaHoaDon = h.MaHoaDon LIMIT 1) AS TenPhim
     FROM HoaDon h 
     JOIN KhachHang k ON h.MaKH = k.MaKH
     LEFT JOIN ThanhToan t ON h.PhuongThuc = t.MaThanhToan;
@@ -638,12 +638,15 @@ END //
 DROP PROCEDURE IF EXISTS sp_GetInvoiceDetails //
 CREATE PROCEDURE sp_GetInvoiceDetails(IN p_id INT)
 BEGIN
-    SELECT d.*, p.TenPhim, g.SoGhe, ph.TenPhong, s.NgayChieu, s.GioBatDau, s.GioKetThuc
+    -- Lấy thông tin vé phim và thông tin sản phẩm (nếu có)
+    SELECT d.*, p.TenPhim, g.SoGhe, ph.TenPhong, s.NgayChieu, s.GioBatDau, s.GioKetThuc,
+           sp.TenSP, sp.Gia AS GiaNiemYet
     FROM ChiTietHoaDon d
-    JOIN Phim p ON d.MaPhim = p.MaPhim
-    JOIN Ghe g ON d.MaGhe = g.MaGhe
-    JOIN SuatChieu s ON d.MaSuat = s.MaSuat
-    JOIN Phong ph ON s.MaPhong = ph.MaPhong
+    LEFT JOIN Phim p ON d.MaPhim = p.MaPhim
+    LEFT JOIN Ghe g ON d.MaGhe = g.MaGhe
+    LEFT JOIN SuatChieu s ON d.MaSuat = s.MaSuat
+    LEFT JOIN Phong ph ON s.MaPhong = ph.MaPhong
+    LEFT JOIN SanPham sp ON d.MaSP = sp.MaSP
     WHERE d.MaHoaDon = p_id;
 END //
 -- Xóa hóa đơn (Xóa chi tiết trước sau đó xóa hóa đơn chính - Cascade Delete bằng code)
@@ -698,35 +701,54 @@ BEGIN
     
 END //
 -- Thêm một chi tiết vé mới vào hóa đơn (đã bỏ cột MaGiaoDich)
+-- -----------------------------------------------------------------------------------------
+-- THỦ TỤC: THÊM CHI TIẾT HÓA ĐƠN (Gộp Vé và Sản Phẩm)
+-- MÔ TẢ: Chèn một dòng vào bảng ChiTietHoaDon. Có thể chứa cả thông tin ghế và sản phẩm đi kèm.
+-- -----------------------------------------------------------------------------------------
 DROP PROCEDURE IF EXISTS sp_AddInvoiceDetail //
-CREATE PROCEDURE sp_AddInvoiceDetail(IN p_MaHoaDon INT,
-    IN p_MaPhim INT,
-    IN p_MaSuat INT,
-    IN p_MaGhe INT,
-    IN p_GiaVe DECIMAL(18, 0))
+CREATE PROCEDURE sp_AddInvoiceDetail(
+    IN p_MaHoaDon INT,   -- ID hóa đơn vừa tạo
+    IN p_MaPhim INT,     -- ID phim (có thể NULL nếu chỉ mua SP)
+    IN p_MaSuat INT,     -- ID suất chiếu
+    IN p_MaGhe INT,      -- ID ghế ngồi
+    IN p_MaSP INT,       -- ID sản phẩm bắp nước (có thể NULL nếu chỉ mua vé)
+    IN p_SoLuongSP INT,  -- Số lượng bắp nước
+    IN p_GiaVe DECIMAL(18, 0) -- Giá của vé xem phim (hoặc giá của dòng này)
+)
 BEGIN
-    
     DECLARE EXIT HANDLER FOR SQLEXCEPTION BEGIN
         ROLLBACK;
         RESIGNAL;
     END;
     START TRANSACTION;
-        INSERT INTO ChiTietHoaDon (MaHoaDon, MaPhim, MaSuat, MaGhe, GiaVe) 
-        VALUES (p_MaHoaDon, p_MaPhim, p_MaSuat, p_MaGhe, p_GiaVe);
-        COMMIT;
-    
-    
+        -- Chèn dữ liệu vào bảng ChiTietHoaDon duy nhất
+        INSERT INTO ChiTietHoaDon (MaHoaDon, MaPhim, MaSuat, MaGhe, MaSP, SoLuongSP, GiaVe) 
+        VALUES (p_MaHoaDon, p_MaPhim, p_MaSuat, p_MaGhe, p_MaSP, p_SoLuongSP, p_GiaVe);
+    COMMIT;
 END //
--- Tạo mới hóa đơn; MaQR tự sinh bởi DEFAULT NEWID() trên bảng HoaDon
+
+-- -----------------------------------------------------------------------------------------
+-- THỦ TỤC: TẠO ĐẦU HÓA ĐƠN
+-- MÔ TẢ: Tạo thông tin chung cho hóa đơn, trả về ID tự tăng và mã QR định danh duy nhất (UUID)
+-- -----------------------------------------------------------------------------------------
 DROP PROCEDURE IF EXISTS sp_CreateInvoiceHeader //
-CREATE PROCEDURE sp_CreateInvoiceHeader(IN p_MaKH INT, IN p_NgayDat DATETIME, IN p_TongTien DECIMAL(18,0), IN p_PhuongThuc INT)
+CREATE PROCEDURE sp_CreateInvoiceHeader(
+    IN p_MaKH INT, 
+    IN p_NgayDat DATETIME, 
+    IN p_TongTien DECIMAL(18,0), 
+    IN p_PhuongThuc INT
+)
 BEGIN
     DECLARE EXIT HANDLER FOR SQLEXCEPTION BEGIN
         ROLLBACK;
         RESIGNAL;
     END;
     START TRANSACTION;
-    INSERT INTO HoaDon (MaKH, NgayDat, TongTien, PhuongThuc) VALUES (p_MaKH, p_NgayDat, p_TongTien, p_PhuongThuc);
+    -- Chèn vào bảng HoaDon chính
+    INSERT INTO HoaDon (MaKH, NgayDat, TongTien, PhuongThuc) 
+    VALUES (p_MaKH, p_NgayDat, p_TongTien, p_PhuongThuc);
+    
+    -- Trả về MaHoaDon vừa tạo (cho Node.js) và tự sinh mã QR bằng hàm UUID() của MySQL
     SELECT LAST_INSERT_ID() AS MaHoaDon, UUID() AS MaQR;
     COMMIT;
 END //
@@ -872,6 +894,8 @@ BEGIN
     FROM BinhLuan bl
     INNER JOIN KhachHang kh ON bl.MaKH = kh.MaKH
     WHERE bl.MaPhim = p_MaPhim AND bl.TrangThai = N'Hiện'
+      AND TRIM(IFNULL(bl.NoiDung, '')) <> ''
+      AND bl.SoSao >= 1
     ORDER BY bl.NgayBL DESC;
 END //
 -- Thêm bình luận mới (yêu cầu khách hàng đã đăng nhập - MaKH hợp lệ)
