@@ -1,6 +1,7 @@
 import express from "express";
 import { createServer as createViteServer } from "vite";
 import path from "path";
+import fs from "fs";
 import crypto from "crypto";
 import { pool as mysqlPool, testConnection, sql, poolWithRequest } from "./db/index.js";
 
@@ -186,11 +187,12 @@ function normalizeInvoiceRow(row: Record<string, any>) {
     if (lowerKey === "mahoadon") obj.MaHoaDon = row[key];
     else if (lowerKey === "makh") obj.MaKH = row[key];
     else if (lowerKey === "ngaydat") obj.NgayDat = row[key];
-    else if (lowerKey === "tongtien") obj.TongTien = row[key];
+    else if (lowerKey === "tongtien") obj.TongTien = Number(row[key]) || 0;
     else if (lowerKey === "tenkhachhang") obj.TenKhachHang = row[key];
     else if (lowerKey === "maqr") obj.MaQR = parseSqlGuid(row[key]);
     else if (lowerKey === "tenphim") obj.TenPhim = row[key];
-    else if (lowerKey === "phuongthuc") obj.PhuongThuc = row[key];
+    else if (lowerKey === "phuongthuc") obj.MaPhuongThuc = row[key];
+    else if (lowerKey === "tenphuongthuc") obj.TenPhuongThuc = row[key];
     else obj[key] = row[key];
   }
   if (!obj.MaQR) {
@@ -200,6 +202,34 @@ function normalizeInvoiceRow(row: Record<string, any>) {
         break;
       }
     }
+  }
+  obj.PhuongThuc = obj.TenPhuongThuc || obj.MaPhuongThuc;
+  return obj;
+}
+
+/** Chuẩn hóa một dòng chi tiết hóa đơn */
+function normalizeInvoiceDetailRow(row: Record<string, any>) {
+  const obj: Record<string, any> = {};
+  for (const key in row) {
+    const lowerKey = key.toLowerCase();
+    if (lowerKey === "mact") obj.MaCT = row[key];
+    else if (lowerKey === "mahoadon") obj.MaHoaDon = row[key];
+    else if (lowerKey === "maphim") obj.MaPhim = row[key];
+    else if (lowerKey === "masuat") obj.MaSuat = row[key];
+    else if (lowerKey === "maghe") obj.MaGhe = row[key];
+    else if (lowerKey === "giave") obj.GiaVe = Number(row[key]) || 0;
+    else if (lowerKey === "tenphim") obj.TenPhim = row[key];
+    else if (lowerKey === "soghe") obj.SoGhe = row[key];
+    else if (lowerKey === "tenphong") obj.TenPhong = row[key];
+    else if (lowerKey === "ngaychieu") obj.NgayChieu = row[key];
+    else if (lowerKey === "giobatdau") obj.GioBatDau = row[key];
+    else if (lowerKey === "gioketthuc") obj.GioKetThuc = row[key];
+    else if (lowerKey === "masp") obj.MaSP = row[key];
+    else if (lowerKey === "soluongsp") obj.SoLuongSP = row[key];
+    else if (lowerKey === "giasp") obj.GiaSP = Number(row[key]) || 0;
+    else if (lowerKey === "gianiemyet") obj.GiaNiemYet = Number(row[key]) || 0;
+    else if (lowerKey === "tensp") obj.TenSP = row[key];
+    else obj[key] = row[key];
   }
   return obj;
 }
@@ -1124,21 +1154,7 @@ app.get("/api/invoice-details/:id", async (req, res) => {
     }
     // Lấy chi tiết hóa đơn kèm JOIN phim và ghế cho đầy đủ thông tin
     const result = await pool!.request().input('id', sql.Int, id).execute("sp_GetInvoiceDetails");
-    const normalized = result.recordset.map((row: Record<string, any>) => {
-      const obj: Record<string, any> = {};
-      for (const key in row) {
-        const lowerKey = key.toLowerCase();
-        if (lowerKey === 'mact') obj.MaCT = row[key];
-        else if (lowerKey === 'mahoadon') obj.MaHoaDon = row[key];
-        else if (lowerKey === 'masuat') obj.MaSuat = row[key];
-        else if (lowerKey === 'maghe') obj.MaGhe = row[key];
-        else if (lowerKey === 'giave') obj.GiaVe = row[key];
-        else if (lowerKey === 'tenphim') obj.TenPhim = row[key];
-        else if (lowerKey === 'soghe') obj.SoGhe = row[key];
-        else obj[key] = row[key];
-      }
-      return obj;
-    });
+    const normalized = result.recordset.map((row: Record<string, any>) => normalizeInvoiceDetailRow(row));
     res.json(normalized);
   } catch (err: any) {
     res.status(500).json({ error: err.message });
@@ -1173,40 +1189,27 @@ app.put("/api/invoices/:id", async (req, res) => {
       return res.status(404).json({ error: "Không tìm thấy" });
     }
 
-    const transaction = new sql.Transaction(pool!);
-    await transaction.begin();
-    try {
-      // 1. Cập nhật thông tin Header của Hóa Đơn
-      await transaction.request()
-        .input('id', sql.Int, id)
-        .input('MaKH', sql.Int, MaKH)
-        .input('NgayDat', sql.DateTime, NgayDat)
-        .input('TongTien', sql.Decimal(18, 0), TongTien)
-        .input('PhuongThuc', sql.Int, PhuongThuc) // Đã sửa từ sql.NVarChar sang sql.Int để khớp với DB
-        .execute("sp_UpdateInvoiceHeader");
+    await pool!.request()
+      .input('id', sql.Int, id)
+      .input('MaKH', sql.Int, MaKH)
+      .input('NgayDat', sql.DateTime, NgayDat)
+      .input('TongTien', sql.Decimal(18, 0), TongTien)
+      .input('PhuongThuc', sql.Int, PhuongThuc)
+      .execute("sp_UpdateInvoiceHeader");
 
-      // 2. Xóa các chi tiết vé cũ của hóa đơn này để cập nhật lại
-      await transaction.request().input('id', sql.Int, id).execute("sp_DeleteInvoiceDetails");
+    await pool!.request().input('id', sql.Int, id).execute("sp_DeleteInvoiceDetails");
 
-      // 3. Thêm danh sách chi tiết vé mới (Duyệt qua từng ID ghế đã chọn)
-      for (const gheId of gheIds) {
-        await transaction.request()
-          .input('MaHoaDon', sql.Int, id)
-          .input('MaPhim', sql.Int, MaPhim)
-          .input('MaSuat', sql.Int, MaSuat)
-          .input('MaGhe', sql.Int, gheId)
-          .input('GiaVe', sql.Decimal(18, 0), GiaVe)
-          .execute("sp_AddInvoiceDetail");
-      }
-
-      // Xác nhận hoàn tất tất cả thay đổi (Commit)
-      await transaction.commit();
-      res.json({ success: true });
-    } catch (err: any) {
-      // Nếu có bất kỳ lỗi nào xảy ra, hoàn tác lại toàn bộ thay đổi (Rollback)
-      await transaction.rollback();
-      throw err;
+    for (const gheId of gheIds) {
+      await pool!.request()
+        .input('MaHoaDon', sql.Int, id)
+        .input('MaPhim', sql.Int, MaPhim)
+        .input('MaSuat', sql.Int, MaSuat)
+        .input('MaGhe', sql.Int, gheId)
+        .input('GiaVe', sql.Decimal(18, 0), GiaVe)
+        .execute("sp_AddInvoiceDetail");
     }
+
+    res.json({ success: true });
   } catch (err: any) {
     res.status(500).json({ error: err.message });
   }
@@ -1220,6 +1223,7 @@ app.delete("/api/invoices/:id", async (req, res) => {
     if (useMockData) {
       mockInvoices = mockInvoices.filter(i => i.MaHoaDon !== parseInt(id));
       mockInvoiceDetails = mockInvoiceDetails.filter(d => d.MaHoaDon !== parseInt(id));
+      // mockInvoiceCombos = mockInvoiceCombos.filter(c => c.MaHoaDon !== parseInt(id));
       return res.json({ message: "Đã xóa hóa đơn và các dữ liệu liên quan (Demo)" });
     }
     // Xóa theo đúng thứ tự để không bị lỗi ràng buộc khóa ngoại (FK)
@@ -1230,10 +1234,9 @@ app.delete("/api/invoices/:id", async (req, res) => {
   }
 });
 
-
-// API: Tạo mới một hóa đơn (Đặt vé mới)
 app.post("/api/invoices", async (req, res) => {
-  const { MaKH, NgayDat, TongTien, MaPhim, MaSuat, MaGheList, GiaVe, PhuongThuc } = req.body;
+  const { MaKH, NgayDat, TongTien, MaPhim, MaSuat, MaGheList, GiaVe, PhuongThuc, Combos } = req.body;
+  const comboItems = Combos || [];
   try {
     const pool = await getPool();
     const gheIds = Array.isArray(MaGheList) ? MaGheList : [MaGheList];
@@ -1243,49 +1246,66 @@ app.post("/api/invoices", async (req, res) => {
       const newMaQR = crypto.randomUUID();
       mockInvoices.push({ MaHoaDon: nextInvId, MaKH: parseInt(MaKH), NgayDat, TongTien: parseFloat(TongTien), PhuongThuc, MaQR: newMaQR });
 
-      gheIds.forEach(gheId => {
+      // Logic gộp dòng cho Demo
+      const iterations = Math.max(gheIds.length, comboItems.length);
+      for (let i = 0; i < iterations; i++) {
         const nextDetId = mockInvoiceDetails.length > 0 ? Math.max(...mockInvoiceDetails.map(d => d.MaCT)) + 1 : 1;
+        const gheId = gheIds[i] || null;
+        const combo = comboItems[i] || null;
         mockInvoiceDetails.push({
-          MaCT: nextDetId, MaHoaDon: nextInvId, MaPhim: parseInt(MaPhim), MaSuat: parseInt(MaSuat),
-          MaGhe: parseInt(gheId), GiaVe: parseFloat(GiaVe)
-        });
-      });
+          MaCT: nextDetId,
+          MaHoaDon: nextInvId,
+          MaPhim: gheId ? parseInt(MaPhim) : null,
+          MaSuat: gheId ? parseInt(MaSuat) : null,
+          MaGhe: gheId ? parseInt(gheId) : null,
+          MaSP: combo ? combo.MaSP : null,
+          SoLuongSP: combo ? combo.SoLuong : null,
+          GiaVe: gheId ? parseFloat(GiaVe) : 0,
+          GiaSP: combo ? parseFloat(combo.DonGia) : 0
+        } as any);
+      }
 
       return res.status(201).json({ success: true, MaHoaDon: nextInvId, MaQR: newMaQR, message: "Đã tạo hóa đơn (Demo)" });
     }
 
-    const transaction = new sql.Transaction(pool!);
-    await transaction.begin();
-    try {
-      // 1. Tạo mới dòng Header cho Hóa Đơn và lấy lại ID vừa tạo
-      const invRes = await transaction.request()
-        .input('MaKH', sql.Int, MaKH)
-        .input('NgayDat', sql.DateTime, NgayDat)
-        .input('TongTien', sql.Decimal(18, 0), TongTien)
-        .input('PhuongThuc', sql.Int, PhuongThuc)
-        .execute("sp_CreateInvoiceHeader");
-      const newInvId = invRes.recordset[0].MaHoaDon;
-      const newMaQR = parseSqlGuid(invRes.recordset[0].MaQR) || invRes.recordset[0].MaQR;
+    // MySQL: mỗi stored procedure đã START TRANSACTION/COMMIT riêng — không bọc thêm Transaction Node (tránh treo request)
+    const invRes = await pool!.request()
+      .input('MaKH', sql.Int, MaKH)
+      .input('NgayDat', sql.DateTime, NgayDat)
+      .input('TongTien', sql.Decimal(18, 0), TongTien)
+      .input('PhuongThuc', sql.Int, PhuongThuc)
+      .execute("sp_CreateInvoiceHeader");
+    const invRow = invRes.recordset[0] || {};
+    const newInvId = Number(invRow.MaHoaDon ?? (invRow as Record<string, unknown>).mahoadon);
+    const newMaQR =
+      parseSqlGuid(invRow.MaQR ?? (invRow as Record<string, unknown>).maqr) ||
+      invRow.MaQR ||
+      (invRow as Record<string, unknown>).maqr;
 
-      // 2. Tạo các dòng Chi Tiết Hóa Đơn tương ứng với danh sách ID ghế đã chọn
-      for (const gheId of gheIds) {
-        await transaction.request()
-          .input('MaHoaDon', sql.Int, newInvId)
-          .input('MaPhim', sql.Int, MaPhim)
-          .input('MaSuat', sql.Int, MaSuat)
-          .input('MaGhe', sql.Int, gheId)
-          .input('GiaVe', sql.Decimal(18, 0), GiaVe)
-          .execute("sp_AddInvoiceDetail");
-      }
-
-      // Xác nhận tất cả thay đổi thành công
-      await transaction.commit();
-      res.status(201).json({ success: true, MaHoaDon: newInvId, MaQR: newMaQR });
-    } catch (err: any) {
-      // Nếu lỗi, hủy toàn bộ thao tác để đảm bảo tính nhất quán của dữ liệu (không bị tình trạng hóa đơn có nhưng không có chi tiết vé)
-      await transaction.rollback();
-      throw err;
+    if (!Number.isFinite(newInvId)) {
+      throw new Error("Không tạo được hóa đơn");
     }
+
+    // Logic gộp dòng cho MySQL (Zipping)
+    // Nếu mua 1 vé + 1 bắp nước -> Sẽ chỉ gọi Procedure 1 lần để tạo 1 dòng duy nhất
+    const iterations = Math.max(gheIds.length, comboItems.length);
+    for (let i = 0; i < iterations; i++) {
+      const gheId = gheIds[i] || null;
+      const combo = comboItems[i] || null;
+
+      await pool!.request()
+        .input('MaHoaDon', sql.Int, newInvId)
+        .input('MaPhim', sql.Int, gheId ? MaPhim : null)
+        .input('MaSuat', sql.Int, gheId ? MaSuat : null)
+        .input('MaGhe', sql.Int, gheId)
+        .input('MaSP', sql.Int, combo ? combo.MaSP : null)
+        .input('SoLuongSP', sql.Int, combo ? combo.SoLuong : null)
+        .input('GiaVe', sql.Decimal(18, 0), gheId ? GiaVe : 0)
+        .input('GiaSP', sql.Int, combo ? combo.DonGia : 0)
+        .execute("sp_AddInvoiceDetail");
+    }
+
+    res.status(201).json({ success: true, MaHoaDon: newInvId, MaQR: newMaQR });
   } catch (err: any) {
     res.status(500).json({ error: err.message });
   }
@@ -1652,7 +1672,9 @@ app.get("/api/binhluan/:maPhim", async (req, res) => {
     const pool = await getPool();
     if (useMockData) {
       const list = mockComments
-        .filter(c => c.MaPhim === maPhim && c.TrangThai === "Hiện")
+        .filter(c => c.MaPhim === maPhim && c.TrangThai === "Hiện"
+          && (c.NoiDung || '').toString().trim().length > 0
+          && Number(c.SoSao) >= 1)
         .map(c => {
           const kh = mockCustomers.find(k => k.MaKH === c.MaKH);
           return { ...c, TenKH: kh?.Ten || "Thành viên", HinhAnh: kh?.HinhAnh || "" };
@@ -1679,6 +1701,9 @@ app.get("/api/binhluan/:maPhim", async (req, res) => {
         else obj[key] = row[key];
       }
       return obj;
+    }).filter((c: Record<string, any>) => {
+      const content = (c.NoiDung || '').toString().trim();
+      return content.length > 0 && Number(c.SoSao) >= 1;
     });
     res.json(normalized);
   } catch (err: any) {
@@ -1721,6 +1746,161 @@ app.post("/api/binhluan", async (req, res) => {
     res.status(201).json({ success: true, MaBL: result.recordset[0]?.MaBL });
   } catch (err: any) {
     res.status(500).json({ error: err.message });
+  }
+});
+
+/** Thống kê dashboard từ dữ liệu giả (Demo) */
+function computeAdminStatsFromMock() {
+  const totalRevenue = mockInvoices.reduce((s, i) => s + Number(i.TongTien), 0);
+  const monthMap = new Map<string, number>();
+  mockInvoices.forEach((i) => {
+    const d = new Date(i.NgayDat);
+    const label = `${String(d.getMonth() + 1).padStart(2, "0")}/${d.getFullYear()}`;
+    monthMap.set(label, (monthMap.get(label) || 0) + Number(i.TongTien));
+  });
+  const revenueByMonth = [...monthMap.entries()].slice(-6).map(([label, total]) => ({ label, total }));
+
+  const payMap = new Map<string, number>();
+  mockInvoices.forEach((i) => {
+    const p = mockPayments.find((x) => x.MaThanhToan === i.PhuongThuc);
+    const label = p?.TenPhuongThuc || `Phương thức #${i.PhuongThuc}`;
+    payMap.set(label, (payMap.get(label) || 0) + Number(i.TongTien));
+  });
+  const revenueByPayment = [...payMap.entries()].map(([label, total]) => ({ label, total }));
+
+  const statusMap = new Map<string, number>();
+  mockMovies.forEach((m) => {
+    const label = m.TrangThai || "Khác";
+    statusMap.set(label, (statusMap.get(label) || 0) + 1);
+  });
+  const moviesByStatus = [...statusMap.entries()].map(([label, count]) => ({ label, count }));
+
+  const recentInvoices = [...mockInvoices]
+    .sort((a, b) => new Date(b.NgayDat).getTime() - new Date(a.NgayDat).getTime())
+    .slice(0, 5)
+    .map((i) => ({
+      MaHoaDon: i.MaHoaDon,
+      TongTien: i.TongTien,
+      NgayDat: i.NgayDat,
+      TenKhachHang: mockCustomers.find((c) => c.MaKH === i.MaKH)?.Ten,
+    }));
+
+  return {
+    summary: {
+      totalRevenue,
+      totalInvoices: mockInvoices.length,
+      totalCustomers: mockCustomers.length,
+      totalMovies: mockMovies.length,
+    },
+    revenueByMonth,
+    revenueByPayment,
+    moviesByStatus,
+    recentInvoices,
+  };
+}
+
+// --- TÀI LIỆU API (Swagger / OpenAPI — tiêu chí 1) ---
+app.get("/api/openapi.json", (_req, res) => {
+  const specPath = path.join(process.cwd(), "docs", "openapi.json");
+  if (!fs.existsSync(specPath)) {
+    return res.status(404).json({ success: false, error: "Không tìm thấy openapi.json" });
+  }
+  res.type("application/json").send(fs.readFileSync(specPath, "utf-8"));
+});
+
+app.get("/api-docs", (_req, res) => {
+  res.type("html").send(`<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Cinema API — Swagger UI</title>
+  <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5/swagger-ui.css"/>
+</head>
+<body>
+  <div id="swagger-ui"></div>
+  <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
+  <script>
+    SwaggerUIBundle({ url: '/api/openapi.json', dom_id: '#swagger-ui', deepLinking: true });
+  </script>
+</body>
+</html>`);
+});
+
+// --- THỐNG KÊ ADMIN (tiêu chí 7) ---
+app.get("/api/admin/stats", async (_req, res) => {
+  try {
+    if (useMockData) {
+      return res.json(computeAdminStatsFromMock());
+    }
+
+    const [revMonthRows] = await mysqlPool.query(
+      `SELECT DATE_FORMAT(NgayDat, '%m/%Y') AS label, SUM(TongTien) AS total
+       FROM HoaDon
+       WHERE NgayDat >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH)
+       GROUP BY YEAR(NgayDat), MONTH(NgayDat)
+       ORDER BY MIN(NgayDat) ASC`
+    );
+    const [payRows] = await mysqlPool.query(
+      `SELECT COALESCE(t.TenPhuongThuc, CONCAT('PT #', h.PhuongThuc)) AS label,
+              SUM(h.TongTien) AS total
+       FROM HoaDon h
+       LEFT JOIN ThanhToan t ON h.PhuongThuc = t.MaThanhToan
+       GROUP BY h.PhuongThuc, t.TenPhuongThuc`
+    );
+    const [movieRows] = await mysqlPool.query(
+      `SELECT TrangThai AS label, COUNT(*) AS count FROM Phim GROUP BY TrangThai`
+    );
+    const [sumRows] = await mysqlPool.query(
+      `SELECT
+         (SELECT COALESCE(SUM(TongTien),0) FROM HoaDon) AS totalRevenue,
+         (SELECT COUNT(*) FROM HoaDon) AS totalInvoices,
+         (SELECT COUNT(*) FROM KhachHang) AS totalCustomers,
+         (SELECT COUNT(*) FROM Phim) AS totalMovies`
+    );
+    const [recentRows] = await mysqlPool.query(
+      `SELECT h.MaHoaDon, h.TongTien, h.NgayDat, k.Ten AS TenKhachHang
+       FROM HoaDon h
+       JOIN KhachHang k ON h.MaKH = k.MaKH
+       ORDER BY h.NgayDat DESC
+       LIMIT 5`
+    );
+
+    const summaryRow = (sumRows as Record<string, unknown>[])[0] || {};
+    res.json({
+      summary: {
+        totalRevenue: Number(summaryRow.totalRevenue) || 0,
+        totalInvoices: Number(summaryRow.totalInvoices) || 0,
+        totalCustomers: Number(summaryRow.totalCustomers) || 0,
+        totalMovies: Number(summaryRow.totalMovies) || 0,
+      },
+      revenueByMonth: (revMonthRows as Record<string, unknown>[]).map((r) => ({
+        label: r.label,
+        total: Number(r.total) || 0,
+      })),
+      revenueByPayment: (payRows as Record<string, unknown>[]).map((r) => ({
+        label: r.label,
+        total: Number(r.total) || 0,
+      })),
+      moviesByStatus: (movieRows as Record<string, unknown>[]).map((r) => ({
+        label: r.label,
+        count: Number(r.count) || 0,
+      })),
+      recentInvoices: (recentRows as Record<string, unknown>[]).map((r) => ({
+        MaHoaDon: r.MaHoaDon,
+        TongTien: Number(r.TongTien) || 0,
+        NgayDat: r.NgayDat,
+        TenKhachHang: r.TenKhachHang,
+      })),
+    });
+  } catch (err: any) {
+    res.status(500).json({ success: false, error: err.message || "Lỗi thống kê" });
+  }
+});
+
+// 404 cho route API không tồn tại
+app.use("/api", (req, res) => {
+  if (!res.headersSent) {
+    res.status(404).json({ success: false, error: `API không tồn tại: ${req.method} ${req.path}` });
   }
 });
 

@@ -12,6 +12,30 @@ export const DateTime = "DATETIME";
 export const Time = "TIME";
 export const Money = "MONEY";
 
+/** MySQL DATETIME không nhận chuỗi ISO (2026-05-25T08:00:00.000Z) — chuẩn hóa trước khi CALL procedure */
+export function toMySqlDateTime(value: unknown): string | null {
+  if (value == null || value === "") return null;
+  if (value instanceof globalThis.Date) {
+    const pad = (n: number) => String(n).padStart(2, "0");
+    return `${value.getFullYear()}-${pad(value.getMonth() + 1)}-${pad(value.getDate())} ${pad(value.getHours())}:${pad(value.getMinutes())}:${pad(value.getSeconds())}`;
+  }
+  const s = String(value).trim();
+  if (!s) return null;
+  const normalized = s.includes("T") ? s.replace("T", " ").replace(/Z$/i, "").split(".")[0] : s;
+  return normalized.length >= 19 ? normalized.slice(0, 19) : normalized;
+}
+
+export function toMySqlDate(value: unknown): string | null {
+  const dt = toMySqlDateTime(value);
+  return dt ? dt.slice(0, 10) : null;
+}
+
+function coerceParamValue(type: unknown, value: unknown): unknown {
+  if (type === DateTime) return toMySqlDateTime(value);
+  if (type === Date) return toMySqlDate(value);
+  return value;
+}
+
 /** Lấy recordset đầu tiên sau CALL stored procedure (mysql2 trả về mảng lồng nhau) */
 function extractRecordset(rows: unknown): Record<string, unknown>[] {
   if (!Array.isArray(rows)) return [];
@@ -32,8 +56,8 @@ export class SqlRequest {
 
   constructor(private readonly db: Queryable) {}
 
-  input(_name: string, _type: unknown, value: unknown): this {
-    this.params.push(value);
+  input(_name: string, type: unknown, value: unknown): this {
+    this.params.push(coerceParamValue(type, value));
     return this;
   }
 

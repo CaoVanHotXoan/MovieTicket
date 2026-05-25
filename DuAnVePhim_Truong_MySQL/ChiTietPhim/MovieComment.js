@@ -119,7 +119,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const res = await fetch(`/api/binhluan/${movieId}`);
             if (!res.ok) throw new Error('Không tải được bình luận');
             const comments = await res.json();
-            renderComments(comments);
+            const validComments = (Array.isArray(comments) ? comments : []).filter(c => {
+                const content = (c.NoiDung || '').toString().trim();
+                return content.length > 0 && Number(c.SoSao) >= 1;
+            });
+            renderComments(validComments);
         } catch (err) {
             console.error(err);
             commentsList.innerHTML = '<div class="no-comments-message"><p>Lỗi tải bình luận. Vui lòng thử lại sau.</p></div>';
@@ -141,6 +145,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         comments.forEach(comment => {
+            const content = (comment.NoiDung || '').toString().trim();
+            if (!content || Number(comment.SoSao) < 1) return;
+
             const commentItem = document.createElement('div');
             commentItem.className = 'comment-item';
 

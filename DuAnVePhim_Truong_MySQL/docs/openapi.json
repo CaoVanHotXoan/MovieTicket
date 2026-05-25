@@ -1,0 +1,132 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Cinema Manager API",
+    "description": "REST API quản lý rạp phim — đặt vé, hóa đơn, phim, khách hàng, thanh toán.",
+    "version": "1.0.0",
+    "contact": { "name": "TEAM BẤT ỔN" }
+  },
+  "servers": [{ "url": "http://localhost:3015", "description": "Development" }],
+  "tags": [
+    { "name": "Auth", "description": "Đăng nhập" },
+    { "name": "Movies", "description": "Phim & thể loại" },
+    { "name": "Booking", "description": "Suất chiếu, ghế, đặt vé" },
+    { "name": "Invoices", "description": "Hóa đơn & chi tiết" },
+    { "name": "Admin", "description": "Thống kê dashboard" },
+    { "name": "Comments", "description": "Bình luận phim" }
+  ],
+  "paths": {
+    "/api/login": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Đăng nhập khách hàng",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["username", "password"],
+                "properties": {
+                  "username": { "type": "string" },
+                  "password": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Đăng nhập thành công" },
+          "401": { "description": "Sai thông tin" }
+        }
+      }
+    },
+    "/api/movies": {
+      "get": {
+        "tags": ["Movies"],
+        "summary": "Danh sách phim",
+        "responses": { "200": { "description": "Mảng phim" } }
+      },
+      "post": {
+        "tags": ["Movies"],
+        "summary": "Thêm phim mới",
+        "responses": { "201": { "description": "Đã tạo" } }
+      }
+    },
+    "/api/movies/{id}": {
+      "put": { "tags": ["Movies"], "summary": "Cập nhật phim", "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }], "responses": { "200": { "description": "OK" } } },
+      "delete": { "tags": ["Movies"], "summary": "Xóa phim", "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }], "responses": { "200": { "description": "OK" } } }
+    },
+    "/api/showtimes": {
+      "get": { "tags": ["Booking"], "summary": "Danh sách suất chiếu", "responses": { "200": { "description": "OK" } } }
+    },
+    "/api/seats": {
+      "get": { "tags": ["Booking"], "summary": "Danh sách ghế", "responses": { "200": { "description": "OK" } } }
+    },
+    "/api/invoices": {
+      "get": { "tags": ["Invoices"], "summary": "Danh sách hóa đơn", "responses": { "200": { "description": "OK" } } },
+      "post": { "tags": ["Invoices"], "summary": "Tạo hóa đơn / đặt vé", "responses": { "201": { "description": "Đã tạo" } } }
+    },
+    "/api/invoice-details/{id}": {
+      "get": {
+        "tags": ["Invoices"],
+        "summary": "Chi tiết hóa đơn (ChiTietHoaDon)",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }],
+        "responses": { "200": { "description": "Mảng chi tiết vé & combo" } }
+      }
+    },
+    "/api/payments": {
+      "get": { "tags": ["Invoices"], "summary": "Phương thức thanh toán", "responses": { "200": { "description": "OK" } } }
+    },
+    "/api/admin/stats": {
+      "get": {
+        "tags": ["Admin"],
+        "summary": "Thống kê dashboard admin",
+        "responses": {
+          "200": {
+            "description": "Doanh thu, biểu đồ, tổng quan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "summary": { "type": "object" },
+                    "revenueByMonth": { "type": "array" },
+                    "revenueByPayment": { "type": "array" },
+                    "moviesByStatus": { "type": "array" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/binhluan/{maPhim}": {
+      "get": {
+        "tags": ["Comments"],
+        "summary": "Bình luận theo phim",
+        "parameters": [{ "name": "maPhim", "in": "path", "required": true, "schema": { "type": "integer" } }],
+        "responses": { "200": { "description": "OK" } }
+      }
+    },
+    "/api/binhluan": {
+      "post": {
+        "tags": ["Comments"],
+        "summary": "Gửi bình luận",
+        "responses": { "201": { "description": "Đã tạo" } }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ApiError": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean", "example": false },
+          "error": { "type": "string" }
+        }
+      }
+    }
+  }
+}

@@ -350,7 +350,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 MaSuat: showtime.MaSuat,
                 MaGheList: selectedSeats.map(s => s.MaGhe),
                 GiaVe: Number(selectedSeats[0]?.GiaGhe) || 0,
-                PhuongThuc: selectedPaymentMethod
+                PhuongThuc: selectedPaymentMethod,
+                Combos: (pendingBooking.combos || []).map(c => ({
+                    MaSP: c.id,
+                    SoLuong: c.qty,
+                    DonGia: c.price
+                }))
             };
             
             const response = await fetch('/api/invoices', {
