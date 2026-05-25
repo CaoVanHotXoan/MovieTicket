@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TEAM BẤT ỔN - Thông Tin Cá Nhân</title>
+    <!-- Liên kết CSS dùng chung cho Header và Footer -->
+    <link rel="stylesheet" href="../HeaderFooter.css">
+    <!-- Liên kết CSS riêng cho Trang Profile -->
+    <link rel="stylesheet" href="Profile.css">
+    <!-- Thư viện Font Awesome dùng các icon chuyên nghiệp -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <!-- PHẦN HEADER: Dùng chung toàn bộ dự án -->
+    <header class="main-header">
+        <div class="header-container">
+            <!-- Góc trái: Logo -->
+            <div class="header-left">
+                <a href="../index.html" class="logo">TEAM BẤT ỔN</a>
+            </div>
+
+            <!-- Ở giữa: Thanh Menu điều hướng -->
+            <nav class="header-center">
+                <ul class="nav-menu">
+                    <li><a href="../index.html">TRANG CHỦ</a></li>
+                    <li><a href="../Phim/Movies.html">PHIM</a></li>
+                    <li><a href="../LichSu/History.html">LỊCH SỬ</a></li>
+                    <li class="dropdown">
+                        <a href="#">INFORMATION <i class="fa-solid fa-chevron-down nav-arrow"></i></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="../Information_AboutUs/AboutUs.html">ABOUT US</a></li>
+                            <li><a href="../LienHe/LienHe.html">LIÊN HỆ</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- Góc phải: Tìm kiếm & Đăng nhập -->
+            <div class="header-right">
+                <div class="search-box">
+                    <input type="text" class="search-txt" placeholder="Tìm kiếm phim...">
+                    <a href="#" class="search-btn"><i class="fa-solid fa-magnifying-glass"></i></a>
+                    <div class="search-suggestions" id="searchSuggestions"></div>
+                </div>
+                <!-- login-icon tự động cập nhật link qua api.js -->
+                <a href="../Login/Login.html" class="login-icon" title="Đăng nhập"><i class="fa-solid fa-user"></i></a>
+            </div>
+        </div>
+    </header>
+
+    <!-- PHẦN NỘI DUNG CHÍNH (MAIN) - Bề ngang 80% màn hình -->
+    <main class="profile-main">
+        <div class="profile-container">
+            <!-- Thanh menu tabs chuyển đổi -->
+            <div class="profile-tabs">
+                <button class="tab-btn active" data-tab="info-tab">
+                    <i class="fa-solid fa-user-gear"></i> THÔNG TIN CÁ NHÂN
+                </button>
+                <button class="tab-btn" data-tab="notif-tab">
+                    <i class="fa-solid fa-bell"></i> THÔNG BÁO <span class="notif-count" id="notifCount">2</span>
+                </button>
+            </div>
+
+            <!-- Vùng nội dung chi tiết của các tabs -->
+            <div class="tab-contents">
+                
+                <!-- TAB 1: THÔNG TIN CÁ NHÂN -->
+                <div class="tab-content active" id="info-tab">
+                    <!-- Phần hiển thị tóm tắt thông tin & tiến trình chi tiêu hội viên -->
+                    <div class="profile-card-header">
+                        <!-- Khu vực avatar và Tên -->
+                        <!-- PHẦN 3: Avatar — hiển thị & chỉnh sửa URL ảnh (cột HinhAnh trong bảng KhachHang) -->
+                        <div class="avatar-section">
+                            <div class="avatar-wrapper" id="avatarEditTrigger" title="Nhấn để đổi ảnh đại diện">
+                                <img src="https://placehold.co/150x150/111/fff?text=AVATAR" alt="Avatar" id="profileAvatar">
+                                <div class="avatar-overlay">
+                                    <i class="fa-solid fa-camera"></i>
+                                </div>
+                            </div>
+                            <div id="avatarEditPanel" class="avatar-edit-panel" style="display: none;">
+                                <label for="profileAvatarUrl" class="avatar-edit-label">Link ảnh đại diện (URL)</label>
+                                <input type="url" id="profileAvatarUrl" class="avatar-url-input" placeholder="https://...">
+                                <div class="avatar-edit-actions">
+                                    <button type="button" class="btn btn-save-avatar" id="saveAvatarBtn">
+                                        <i class="fa-solid fa-floppy-disk"></i> Lưu ảnh
+                                    </button>
+                                    <button type="button" class="btn" id="cancelAvatarBtn" style="background:#333;color:#fff;">Hủy</button>
+                                </div>
+                            </div>
+                            <h2 id="profileNameDisplay" class="display-name">Người dùng</h2>
+                            <p class="membership-tier" id="membershipTier">Thành viên mới</p>
+                        </div>
+                        
+                        <!-- Thanh tiến độ tích lũy chi tiêu -->
+                        <div class="spending-section">
+                            <div class="spending-summary">
+                                <span>Tổng chi tiêu tích lũy:</span>
+                                <strong id="totalSpentText">0 đ</strong>
+                            </div>
+                            
+                            <div class="progress-container">
+                                <!-- Nền thanh chạy tiến trình -->
+                                <div class="progress-bar-bg">
+                                    <div class="progress-bar-fill" id="progressBarFill" style="width: 0%;"></div>
+                                </div>
+                                <!-- Các mốc checkpoint cố định -->
+                                <div class="progress-checkpoints">
+                                    <div class="checkpoint reached" id="checkpoint-0" style="left: 0%;">
+                                        <div class="bullet"></div>
+                                        <div class="label">0 đ</div>
+                                    </div>
+                                    <div class="checkpoint" id="checkpoint-2m" style="left: 50%;">
+                                        <div class="bullet"></div>
+                                        <div class="label">2.000.000 đ</div>
+                                    </div>
+                                    <div class="checkpoint" id="checkpoint-4m" style="left: 100%;">
+                                        <div class="bullet"></div>
+                                        <div class="label">4.000.000 đ</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Phần form chỉnh sửa chi tiết thông tin cá nhân -->
+                    <div class="profile-card-body">
+                        <form id="profileForm">
+                            <div class="form-grid">
+                                <!-- Họ Tên (Read-only) -->
+                                <div class="form-group">
+                                    <label for="profileName">Họ và tên</label>
+                                    <div class="input-wrapper">
+                                        <i class="fa-solid fa-signature"></i>
+                                        <input type="text" id="profileName" placeholder="Họ tên của bạn" readonly>
+                                    </div>
+                                </div>
+
+                                <!-- Email (Read-only) -->
+                                <div class="form-group">
+                                    <label for="profileEmail">Địa chỉ Email</label>
+                                    <div class="input-wrapper">
+                                        <i class="fa-solid fa-envelope"></i>
+                                        <input type="email" id="profileEmail" placeholder="Email của bạn" readonly>
+                                    </div>
+                                </div>
+
+                                <!-- Nút Kích Hoạt Đổi Mật Khẩu -->
+                                <div class="form-group full-width" id="changePasswordTrigger">
+                                    <button type="button" class="btn" style="background-color: #333; color: #fff; border: 1px solid #444; width: 100%;" id="showChangePasswordBtn">
+                                        <i class="fa-solid fa-unlock-keyhole"></i> ĐỔI MẬT KHẨU
+                                    </button>
+                                </div>
+
+                                <!-- Khu vực đổi mật khẩu (Mặc định ẩn) -->
+                                <div id="passwordFields" style="display: none; grid-column: span 2; grid-template-columns: repeat(2, 1fr); gap: 30px;">
+                                    <!-- Nhập Mật khẩu cũ -->
+                                    <div class="form-group full-width">
+                                        <label for="profileOldPassword">Mật khẩu cũ <span class="required">*</span></label>
+                                        <div class="input-wrapper">
+                                            <i class="fa-solid fa-key"></i>
+                                            <input type="password" id="profileOldPassword" placeholder="Nhập mật khẩu cũ để xác thực">
+                                            <button type="button" class="toggle-password" id="toggleOldPasswordBtn" title="Hiển thị mật khẩu">
+                                                <i class="fa-solid fa-eye-slash" id="oldEyeIcon"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Nhập Mật khẩu mới -->
+                                    <div class="form-group">
+                                        <label for="profileNewPassword">Mật khẩu mới <span class="required">*</span></label>
+                                        <div class="input-wrapper">
+                                            <i class="fa-solid fa-lock"></i>
+                                            <input type="password" id="profileNewPassword" placeholder="Nhập mật khẩu mới">
+                                            <button type="button" class="toggle-password" id="toggleNewPasswordBtn" title="Hiển thị mật khẩu">
+                                                <i class="fa-solid fa-eye-slash" id="newEyeIcon"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Nhập lại Mật khẩu mới -->
+                                    <div class="form-group">
+                                        <label for="profileConfirmPassword">Nhập lại mật khẩu mới <span class="required">*</span></label>
+                                        <div class="input-wrapper">
+                                            <i class="fa-solid fa-lock"></i>
+                                            <input type="password" id="profileConfirmPassword" placeholder="Xác nhận lại mật khẩu mới">
+                                            <button type="button" class="toggle-password" id="toggleConfirmPasswordBtn" title="Hiển thị mật khẩu">
+                                                <i class="fa-solid fa-eye-slash" id="confirmEyeIcon"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Nút Lưu Thay Đổi -->
+                                    <div class="form-actions" style="grid-column: span 2; margin-top: 10px; padding-top: 25px; border-top: 1px solid #222;">
+                                        <button type="submit" class="btn btn-save">
+                                            <i class="fa-solid fa-floppy-disk"></i> LƯU THAY ĐỔI
+                                        </button>
+                                    </div>
+                                </div>
+                        </form>
+                    </div>
+                    
+                    <!-- Nút Đăng Xuất nằm ở dưới cùng -->
+                    <div class="logout-section">
+                        <button type="button" class="btn btn-logout" id="logout-btn">
+                            <i class="fa-solid fa-right-from-bracket"></i> ĐĂNG XUẤT TÀI KHOẢN
+                        </button>
+                    </div>
+                </div>
+
+                <!-- TAB 2: DANH SÁCH THÔNG BÁO -->
+                <div class="tab-content" id="notif-tab">
+                    <div class="notifications-list" id="notificationsList">
+                        <!-- Thông báo 1 (Mặc định unread) -->
+                        <div class="notification-item unread">
+                            <div class="notif-icon"><i class="fa-solid fa-ticket"></i></div>
+                            <div class="notif-details">
+                                <h3>Đặt vé thành công!</h3>
+                                <p>Chúc mừng bạn đã đặt vé thành công bộ phim "Kẻ Hủy Diệt: Kỷ Nguyên Mới". Suất chiếu: 18:00 tại Phòng 1. Vui lòng kiểm tra mục Lịch sử giao dịch để xem chi tiết vé.</p>
+                                <span class="notif-time"><i class="fa-regular fa-clock"></i> 10 phút trước</span>
+                            </div>
+                            <div class="notif-badge"></div>
+                        </div>
+
+                        <!-- Thông báo 2 (Mặc định unread) -->
+                        <div class="notification-item unread">
+                            <div class="notif-icon"><i class="fa-solid fa-award"></i></div>
+                            <div class="notif-details">
+                                <h3>Chào mừng thành viên mới!</h3>
+                                <p>Hệ thống chào mừng bạn tham gia Câu lạc bộ điện ảnh TEAM BẤT ỔN. Hãy xem phim tích điểm chi tiêu để thăng cấp VIP và nhận nhiều phần quà hấp dẫn.</p>
+                                <span class="notif-time"><i class="fa-regular fa-clock"></i> 2 giờ trước</span>
+                            </div>
+                            <div class="notif-badge"></div>
+                        </div>
+
+                        <!-- Thông báo 3 (Đã đọc) -->
+                        <div class="notification-item">
+                            <div class="notif-icon"><i class="fa-solid fa-percent"></i></div>
+                            <div class="notif-details">
+                                <h3>Khuyến mãi đặc biệt mừng hè</h3>
+                                <p>Nhận ngay mã giảm giá 10% cho khách hàng mới của hệ thống. Nhập mã "HEBATON" áp dụng cho tất cả các suất chiếu phim 2D/3D trực tuyến.</p>
+                                <span class="notif-time"><i class="fa-regular fa-clock"></i> 1 ngày trước</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- PHẦN FOOTER: Dùng chung toàn bộ dự án -->
+    <footer class="main-footer">
+        <div class="footer-content">
+            <div class="footer-logo-section">
+                <a href="../index.html" class="footer-logo">TEAM BẤT ỔN</a>
+                <p>Khám phá thế giới điện ảnh đẳng cấp cùng chúng tôi.</p>
+            </div>
+            <div class="footer-links-section">
+                <h3>CHÍNH SÁCH</h3>
+                <ul>
+                    <li><a href="#">Điều khoản sử dụng</a></li>
+                    <li><a href="#">Chính sách bảo mật</a></li>
+                    <li><a href="#">Câu hỏi thường gặp</a></li>
+                </ul>
+            </div>
+            <div class="footer-contact-section">
+                <h3><a href="../LienHe/LienHe.html">LIÊN HỆ</a></h3>
+                <p><i class="fa-solid fa-envelope"></i> contact@teambat.on</p>
+                <p><i class="fa-solid fa-phone"></i> 1900 1234</p>
+                <p><i class="fa-solid fa-location-dot"></i> 123 Nguyễn Văn Cừ, Q.5, TP.HCM</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 TEAM BẤT ỔN. Đã đăng ký bản quyền.</p>
+        </div>
+    </footer>
+
+    <!-- Các tệp Javascript hệ thống -->
+    <script src="../script.js"></script>
+    <script src="../api.js"></script>
+    <!-- Tệp Javascript điều khiển cho trang Profile -->
+    <script src="Profile.js"></script>
+</body>
+
+</html>
