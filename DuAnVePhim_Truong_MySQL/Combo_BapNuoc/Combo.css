@@ -1,0 +1,613 @@
+/* Combo.css - Giao diện chọn Combo Bắp Nước Đen Trắng Premium */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap');
+
+:root {
+    --bg-color: #000;
+    --card-bg: #111;
+    --text-primary: #fff;
+    --text-secondary: #aaa;
+    --accent-color: #fff;
+    --border-color: #222;
+    --hover-border: #555;
+    --transition-speed: 0.3s;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Outfit', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-primary);
+    overflow-x: hidden;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* 1. HEADER CHUNG VỚI TRANG ĐẶT VÉ */
+.booking-header {
+    padding: 20px 40px;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+    background-color: #000;
+}
+
+.back-btn {
+    background: none;
+    border: 1px solid #444;
+    color: var(--text-primary);
+    padding: 8px 15px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: var(--transition-speed);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.back-btn:hover {
+    background: #fff;
+    color: #000;
+}
+
+.header-title {
+    flex-grow: 1;
+    text-align: center;
+    font-weight: 700;
+    letter-spacing: 2px;
+    font-size: 1.2rem;
+    margin-right: 100px; /* Cân đối với nút back */
+}
+
+/* 2. PROGRESS BAR - THANH TIẾN ĐỘ */
+.progress-container {
+    width: 100%;
+    background-color: #000;
+    padding: 15px 40px 5px 40px;
+    display: flex;
+    justify-content: center;
+    border-bottom: 1px solid #111;
+}
+
+.progress-bar-steps {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 600px;
+    position: relative;
+}
+
+.progress-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+    transition: all 0.3s ease;
+}
+
+.progress-step .step-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: #111;
+    border: 1px solid #333;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    color: #666;
+    transition: all 0.3s ease;
+}
+
+.progress-step .step-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #666;
+    margin-top: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+}
+
+.progress-line {
+    flex-grow: 1;
+    height: 1px;
+    background-color: #222;
+    margin: 0 10px;
+    margin-top: -24px; /* Cân bằng chiều cao theo icon */
+    z-index: 1;
+    transition: all 0.3s ease;
+}
+
+/* Trạng thái Active và Completed */
+.progress-step.active .step-icon {
+    background-color: #fff;
+    border-color: #fff;
+    color: #000;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
+}
+
+.progress-step.active .step-label {
+    color: #fff;
+}
+
+.progress-step.completed .step-icon {
+    background-color: #111;
+    border-color: #fff;
+    color: #fff;
+}
+
+.progress-step.completed .step-label {
+    color: #aaa;
+}
+
+.progress-line.completed {
+    background-color: #fff;
+}
+
+/* 3. ĐỒNG HỒ ĐẾM NGƯỢC GIỮ GHẾ */
+.timer-banner {
+    width: 100%;
+    background-color: #0d0d0d;
+    border-bottom: 1px solid #1a1a1a;
+    padding: 10px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.timer-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #fff;
+    font-size: 0.95rem;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 8px 20px;
+    border-radius: 20px;
+    border: 1px dashed #444;
+}
+
+.timer-icon {
+    color: #ff3d49; /* Sử dụng màu đỏ để cảnh báo thời gian */
+    font-size: 1.1rem;
+    animation: pulse 1s infinite alternate;
+}
+
+#countdownTimer {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #ff3d49;
+    letter-spacing: 1px;
+}
+
+@keyframes pulse {
+    from { opacity: 0.6; transform: scale(1); }
+    to { opacity: 1; transform: scale(1.1); }
+}
+
+/* 4. LAYOUT CHÍNH */
+.combo-container {
+    flex-grow: 1;
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 30px;
+    max-width: 1200px;
+    width: 100%;
+    margin: 30px auto;
+    padding: 0 20px;
+}
+
+.combo-list-section {
+    display: flex;
+    flex-direction: column;
+}
+
+.section-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #222;
+}
+
+.combo-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* 5. CARD COMBO HÀNG NGANG (HORIZONTAL COMBO CARD) */
+.combo-item {
+    display: flex;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
+    transition: all var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+}
+
+.combo-item:hover {
+    border-color: var(--hover-border);
+    transform: translateX(5px);
+    box-shadow: 0 5px 15px rgba(255, 255, 255, 0.02);
+}
+
+.combo-item.selected {
+    border-color: #fff;
+    background-color: #161616;
+}
+
+/* Phần bên trái: Hình ảnh */
+.combo-img-wrapper {
+    width: 180px;
+    height: 135px;
+    flex-shrink: 0;
+    overflow: hidden;
+    position: relative;
+    background-color: #222;
+}
+
+.combo-img-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--transition-speed);
+}
+
+.combo-item:hover .combo-img-wrapper img {
+    transform: scale(1.05);
+}
+
+/* Badge lựa chọn góc trên ảnh */
+.combo-select-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background-color: #000;
+    color: #fff;
+    border: 1px solid #fff;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    opacity: 0;
+    transform: scale(0.8);
+    transition: all var(--transition-speed);
+    z-index: 5;
+}
+
+.combo-item.selected .combo-select-badge {
+    opacity: 1;
+    transform: scale(1);
+    background-color: #fff;
+    color: #000;
+}
+
+/* Phần bên phải: Thông tin & Mô tả */
+.combo-info {
+    flex-grow: 1;
+    padding: 15px 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.combo-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 15px;
+}
+
+.combo-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.combo-price {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #fff;
+    white-space: nowrap;
+}
+
+.combo-description {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    line-height: 1.4;
+    margin: 8px 0;
+    flex-grow: 1;
+}
+
+/* Bộ điều chỉnh số lượng ở dưới cùng mô tả */
+.combo-controls {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin-top: 10px;
+}
+
+.quantity-selector {
+    display: flex;
+    align-items: center;
+    background-color: #222;
+    border-radius: 4px;
+    overflow: hidden;
+    border: 1px solid #333;
+}
+
+.qty-btn {
+    background: none;
+    border: none;
+    color: #fff;
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition-speed);
+}
+
+.qty-btn:hover {
+    background-color: #fff;
+    color: #000;
+}
+
+.qty-input {
+    width: 35px;
+    height: 32px;
+    border: none;
+    background: none;
+    color: #fff;
+    text-align: center;
+    font-family: inherit;
+    font-weight: 700;
+    font-size: 0.9rem;
+    outline: none;
+    pointer-events: none; /* Chỉ cho phép thay đổi qua nút +/- */
+}
+
+/* 6. SIDEBAR TÓM TẮT ĐƠN HÀNG */
+.booking-summary-section {
+    display: flex;
+    flex-direction: column;
+}
+
+.summary-card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 25px;
+    position: sticky;
+    top: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.summary-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    text-align: center;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+/* Tóm tắt phim */
+.summary-movie-info {
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 15px;
+}
+
+.summary-movie-info h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+}
+
+.summary-movie-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.summary-movie-meta .age-tag {
+    background-color: #fff;
+    color: #000;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 0.75rem;
+}
+
+.summary-movie-meta #sHall {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.summary-datetime {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+/* Tóm tắt chi tiết ghế */
+.summary-details {
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+}
+
+.summary-row span {
+    color: var(--text-secondary);
+}
+
+.summary-row strong {
+    color: #fff;
+}
+
+/* Tóm tắt Combo đã chọn */
+.summary-combos-selected {
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 15px;
+}
+
+.summary-combos-selected h4 {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    letter-spacing: 0.5px;
+}
+
+#selectedCombosList {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 120px;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+#selectedCombosList::-webkit-scrollbar {
+    width: 3px;
+}
+
+#selectedCombosList::-webkit-scrollbar-thumb {
+    background: #333;
+}
+
+.selected-combo-li {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    color: #fff;
+    animation: slideIn 0.2s ease-out;
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.empty-list {
+    color: #555;
+    font-size: 0.85rem;
+    font-style: italic;
+}
+
+/* Tổng tiền và Nút xác nhận */
+.summary-total-section {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.total-row span {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+}
+
+.grand-total {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #fff;
+}
+
+.confirm-combos-btn {
+    background-color: #fff;
+    color: #000;
+    border: none;
+    padding: 15px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+    transition: var(--transition-speed);
+}
+
+.confirm-combos-btn:hover {
+    background-color: #ccc;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255,255,255,0.1);
+}
+
+.confirm-combos-btn:active {
+    transform: translateY(0);
+}
+
+/* 7. RESPONSIVE */
+@media (max-width: 900px) {
+    .combo-container {
+        grid-template-columns: 1fr;
+        margin-top: 15px;
+    }
+    
+    .summary-card {
+        position: relative;
+        top: 0;
+    }
+}
+
+@media (max-width: 600px) {
+    .combo-item {
+        flex-direction: column;
+    }
+    
+    .combo-img-wrapper {
+        width: 100%;
+        height: 160px;
+    }
+    
+    .combo-info {
+        padding: 15px;
+    }
+    
+    .booking-header {
+        padding: 15px 20px;
+    }
+    
+    .header-title {
+        margin-right: 0;
+        font-size: 1rem;
+    }
+}

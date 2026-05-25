@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Về Chúng Tôi - TEAM BẤT ỔN</title>
+    <!-- Link tới file CSS dùng chung ở thư mục cha -->
+    <link rel="stylesheet" href="../HeaderFooter.css">
+    <!-- Link tới file CSS riêng của trang About Us -->
+    <link rel="stylesheet" href="AboutUs.css">
+    <!-- Thư viện Font Awesome cho các icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <!-- PHẦN HEADER: Lấy từ HeaderFooter.css -->
+    <header class="main-header">
+        <div class="header-container">
+            <div class="header-left">
+                <a href="../index.html" class="logo">TEAM BẤT ỔN</a>
+            </div>
+
+            <nav class="header-center">
+                <ul class="nav-menu">
+                    <li><a href="../index.html">TRANG CHỦ</a></li>
+                    <li><a href="../Phim/Movies.html">PHIM</a></li>
+                    <li><a href="../LichSu/History.html">LỊCH SỬ</a></li>
+                    <li class="dropdown">
+                        <a href="#" class="active">INFORMATION <i class="fa-solid fa-chevron-down nav-arrow"></i></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="AboutUs.html">ABOUT US</a></li>
+                            <li><a href="../LienHe/LienHe.html">LIÊN HỆ</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="header-right">
+                <div class="search-box">
+                    <input type="text" class="search-txt" placeholder="Tìm kiếm phim...">
+                    <a href="#" class="search-btn"><i class="fa-solid fa-magnifying-glass"></i></a>
+                    <div class="search-suggestions" id="searchSuggestions"></div>
+                </div>
+                <a href="../Login/Login.html" class="login-icon" title="Đăng nhập"><i class="fa-solid fa-user"></i></a>
+            </div>
+        </div>
+    </header>
+
+    <!-- PHẦN NỘI DUNG CHÍNH: Chiếm 70% chiều ngang -->
+    <main class="about-main">
+        <section class="about-container">
+            <h1 class="about-title">ĐỘI NGŨ CỦA CHÚNG TÔI</h1>
+            <p class="about-subtitle">Những con người đứng sau sự thành công của TEAM BẤT ỔN</p>
+
+            <div class="team-grid">
+                <!-- Thành viên 1 -->
+                <div class="team-card" data-member="1">
+                    <div class="card-image">
+                        <img src="img/Xoan.jpg" alt="CAO VĂN HỘT XOÀN">
+                    </div>
+                    <div class="card-info">
+                        <h3>CAO VĂN HỘT XOÀN</h3>
+                        <p>TEAM LEADER_BACKEND DEVELOPER</p>
+                    </div>
+                </div>
+
+                <!-- Thành viên 2 -->
+                <div class="team-card" data-member="2">
+                    <div class="card-image">
+                        <img src="img/Doanh.jpg" alt="Phạm Tiến Doanh">
+                    </div>
+                    <div class="card-info">
+                        <h3>PHẠM TIẾN DOANH</h3>
+                        <p>FRONTEND DEVELOPER</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- MODAL CHI TIẾT THÀNH VIÊN (Inner Layout) -->
+    <div class="member-modal" id="memberModal">
+        <div class="modal-content">
+            <!-- Nút mũi tên thoát ở góc trái -->
+            <button class="close-modal" id="closeModal">
+                <i class="fa-solid fa-arrow-left"></i>
+            </button>
+
+            <div class="modal-body">
+                <div class="modal-top">
+                    <div class="modal-image">
+                        <img id="modalImg" src="" alt="">
+                    </div>
+                    <div class="modal-header-info">
+                        <h2 id="modalName"></h2>
+                        <p id="modalRole" class="role-tag"></p>
+                    </div>
+                </div>
+                <div class="modal-description">
+                    <h3>Mô tả công việc</h3>
+                    <p id="modalDesc"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PHẦN FOOTER: Lấy từ HeaderFooter.css -->
+    <footer class="main-footer">
+        <div class="footer-content">
+            <div class="footer-logo-section">
+                <a href="../index.html" class="footer-logo">TEAM BẤT ỔN</a>
+                <p>Khám phá thế giới điện ảnh đẳng cấp cùng chúng tôi.</p>
+            </div>
+            <div class="footer-links-section">
+                <h3>CHÍNH SÁCH</h3>
+                <ul>
+                    <li><a href="#">Điều khoản sử dụng</a></li>
+                    <li><a href="#">Chính sách bảo mật</a></li>
+                    <li><a href="#">Câu hỏi thường gặp</a></li>
+                </ul>
+            </div>
+            <div class="footer-contact-section">
+                <h3><a href="../LienHe/LienHe.html">LIÊN HỆ</a></h3>
+                <p><i class="fa-solid fa-envelope"></i> contact@teambat.on</p>
+                <p><i class="fa-solid fa-phone"></i> 1900 1234</p>
+                <p><i class="fa-solid fa-location-dot"></i> 123 Nguyễn Văn Cừ, Q.5, TP.HCM</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 TEAM BẤT ỔN. Đã đăng ký bản quyền.</p>
+        </div>
+    </footer>
+
+    <!-- Script riêng của trang About Us -->
+    <script src="AboutUs.js"></script>
+    <!-- Script chung (nếu cần xử lý searchbox ở header) -->
+    <script src="../script.js"></script>
+</body>
+
+</html>
