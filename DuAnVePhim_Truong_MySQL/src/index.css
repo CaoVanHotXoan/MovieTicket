@@ -39,3 +39,24 @@ code {
 .admin-page-enter {
   animation: pageEnter 0.35s ease-out;
 }
+
+/* Admin: bảng & form co giãn trên mobile */
+#app :has(> table) {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  max-width: 100%;
+}
+
+#app table {
+  min-width: 36rem;
+}
+
+@media (max-width: 767px) {
+  #app form.grid-cols-2 {
+    grid-template-columns: 1fr;
+  }
+
+  #app .grid.grid-cols-2.gap-4 {
+    grid-template-columns: 1fr;
+  }
+}

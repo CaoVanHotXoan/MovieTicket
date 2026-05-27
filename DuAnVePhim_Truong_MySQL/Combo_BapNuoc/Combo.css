@@ -1,4 +1,5 @@
 /* Combo.css - Giao diện chọn Combo Bắp Nước Đen Trắng Premium */
+/* Mobile-First Approach */
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap');
 
 :root {
@@ -10,12 +11,6 @@
     --border-color: #222;
     --hover-border: #555;
     --transition-speed: 0.3s;
-}
-
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
 }
 
 body {
@@ -30,7 +25,7 @@ body {
 
 /* 1. HEADER CHUNG VỚI TRANG ĐẶT VÉ */
 .booking-header {
-    padding: 20px 40px;
+    padding: 0.9375rem 1.25rem; /* 15px 20px */
     display: flex;
     align-items: center;
     border-bottom: 1px solid var(--border-color);
@@ -41,14 +36,14 @@ body {
     background: none;
     border: 1px solid #444;
     color: var(--text-primary);
-    padding: 8px 15px;
-    border-radius: 20px;
+    padding: 0.5rem 0.9375rem;
+    border-radius: 1.25rem;
     cursor: pointer;
     font-size: 0.9rem;
     transition: var(--transition-speed);
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 0.5rem;
 }
 
 .back-btn:hover {
@@ -60,16 +55,16 @@ body {
     flex-grow: 1;
     text-align: center;
     font-weight: 700;
-    letter-spacing: 2px;
-    font-size: 1.2rem;
-    margin-right: 100px; /* Cân đối với nút back */
+    letter-spacing: 0.125rem;
+    font-size: 1rem;
+    margin-right: 0;
 }
 
 /* 2. PROGRESS BAR - THANH TIẾN ĐỘ */
 .progress-container {
     width: 100%;
     background-color: #000;
-    padding: 15px 40px 5px 40px;
+    padding: 0.9375rem 1.25rem 0.3125rem 1.25rem;
     display: flex;
     justify-content: center;
     border-bottom: 1px solid #111;
@@ -80,7 +75,7 @@ body {
     align-items: center;
     justify-content: space-between;
     width: 100%;
-    max-width: 600px;
+    max-width: 37.5rem; /* 600px */
     position: relative;
 }
 
@@ -94,8 +89,8 @@ body {
 }
 
 .progress-step .step-icon {
-    width: 36px;
-    height: 36px;
+    width: 2.25rem;
+    height: 2.25rem;
     border-radius: 50%;
     background-color: #111;
     border: 1px solid #333;
@@ -111,9 +106,9 @@ body {
     font-size: 0.75rem;
     font-weight: 600;
     color: #666;
-    margin-top: 8px;
+    margin-top: 0.5rem;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 0.0625rem;
     transition: all 0.3s ease;
 }
 
@@ -121,44 +116,30 @@ body {
     flex-grow: 1;
     height: 1px;
     background-color: #222;
-    margin: 0 10px;
-    margin-top: -24px; /* Cân bằng chiều cao theo icon */
+    margin: 0 0.625rem;
+    margin-top: -1.5rem;
     z-index: 1;
     transition: all 0.3s ease;
 }
 
-/* Trạng thái Active và Completed */
 .progress-step.active .step-icon {
     background-color: #fff;
     border-color: #fff;
     color: #000;
-    box-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
+    box-shadow: 0 0 0.625rem rgba(255, 255, 255, 0.4);
 }
 
-.progress-step.active .step-label {
-    color: #fff;
-}
-
-.progress-step.completed .step-icon {
-    background-color: #111;
-    border-color: #fff;
-    color: #fff;
-}
-
-.progress-step.completed .step-label {
-    color: #aaa;
-}
-
-.progress-line.completed {
-    background-color: #fff;
-}
+.progress-step.active .step-label { color: #fff; }
+.progress-step.completed .step-icon { background-color: #111; border-color: #fff; color: #fff; }
+.progress-step.completed .step-label { color: #aaa; }
+.progress-line.completed { background-color: #fff; }
 
 /* 3. ĐỒNG HỒ ĐẾM NGƯỢC GIỮ GHẾ */
 .timer-banner {
     width: 100%;
     background-color: #0d0d0d;
     border-bottom: 1px solid #1a1a1a;
-    padding: 10px 0;
+    padding: 0.625rem 0;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -167,17 +148,17 @@ body {
 .timer-box {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 0.625rem;
     color: #fff;
     font-size: 0.95rem;
     background: rgba(255, 255, 255, 0.05);
-    padding: 8px 20px;
-    border-radius: 20px;
+    padding: 0.5rem 1.25rem;
+    border-radius: 1.25rem;
     border: 1px dashed #444;
 }
 
 .timer-icon {
-    color: #ff3d49; /* Sử dụng màu đỏ để cảnh báo thời gian */
+    color: #ff3d49;
     font-size: 1.1rem;
     animation: pulse 1s infinite alternate;
 }
@@ -186,7 +167,7 @@ body {
     font-size: 1.1rem;
     font-weight: 700;
     color: #ff3d49;
-    letter-spacing: 1px;
+    letter-spacing: 0.0625rem;
 }
 
 @keyframes pulse {
@@ -194,16 +175,15 @@ body {
     to { opacity: 1; transform: scale(1.1); }
 }
 
-/* 4. LAYOUT CHÍNH */
+/* 4. LAYOUT CHÍNH (MOBILE FIRST) */
 .combo-container {
     flex-grow: 1;
     display: grid;
-    grid-template-columns: 1fr 380px;
-    gap: 30px;
-    max-width: 1200px;
+    grid-template-columns: 1fr; /* Mobile: 1 column */
+    gap: 1.875rem; /* 30px */
     width: 100%;
-    margin: 30px auto;
-    padding: 0 20px;
+    margin: 0.9375rem auto; /* 15px auto */
+    padding: 0 1.25rem;
 }
 
 .combo-list-section {
@@ -214,25 +194,26 @@ body {
 .section-title {
     font-size: 1.2rem;
     font-weight: 700;
-    letter-spacing: 2px;
+    letter-spacing: 0.125rem;
     text-transform: uppercase;
-    margin-bottom: 20px;
-    padding-bottom: 10px;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.625rem;
     border-bottom: 1px solid #222;
 }
 
 .combo-grid {
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 0.9375rem;
 }
 
-/* 5. CARD COMBO HÀNG NGANG (HORIZONTAL COMBO CARD) */
+/* 5. CARD COMBO (MOBILE FIRST) */
 .combo-item {
     display: flex;
+    flex-direction: column; /* Mobile: column */
     background-color: var(--card-bg);
     border: 1px solid var(--border-color);
-    border-radius: 8px;
+    border-radius: 0.5rem;
     overflow: hidden;
     transition: all var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
@@ -240,8 +221,8 @@ body {
 
 .combo-item:hover {
     border-color: var(--hover-border);
-    transform: translateX(5px);
-    box-shadow: 0 5px 15px rgba(255, 255, 255, 0.02);
+    transform: translateY(-0.3125rem);
+    box-shadow: 0 0.3125rem 0.9375rem rgba(255, 255, 255, 0.02);
 }
 
 .combo-item.selected {
@@ -249,10 +230,9 @@ body {
     background-color: #161616;
 }
 
-/* Phần bên trái: Hình ảnh */
 .combo-img-wrapper {
-    width: 180px;
-    height: 135px;
+    width: 100%;
+    height: 10rem; /* 160px */
     flex-shrink: 0;
     overflow: hidden;
     position: relative;
@@ -270,16 +250,15 @@ body {
     transform: scale(1.05);
 }
 
-/* Badge lựa chọn góc trên ảnh */
 .combo-select-badge {
     position: absolute;
-    top: 10px;
-    left: 10px;
+    top: 0.625rem;
+    left: 0.625rem;
     background-color: #000;
     color: #fff;
     border: 1px solid #fff;
-    width: 24px;
-    height: 24px;
+    width: 1.5rem;
+    height: 1.5rem;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -298,10 +277,9 @@ body {
     color: #000;
 }
 
-/* Phần bên phải: Thông tin & Mô tả */
 .combo-info {
     flex-grow: 1;
-    padding: 15px 20px;
+    padding: 0.9375rem; /* 15px */
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -311,13 +289,13 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    gap: 15px;
+    gap: 0.9375rem;
 }
 
 .combo-title {
     font-size: 1.1rem;
     font-weight: 700;
-    letter-spacing: 1px;
+    letter-spacing: 0.0625rem;
     text-transform: uppercase;
 }
 
@@ -332,23 +310,22 @@ body {
     font-size: 0.85rem;
     color: var(--text-secondary);
     line-height: 1.4;
-    margin: 8px 0;
+    margin: 0.5rem 0;
     flex-grow: 1;
 }
 
-/* Bộ điều chỉnh số lượng ở dưới cùng mô tả */
 .combo-controls {
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    margin-top: 10px;
+    margin-top: 0.625rem;
 }
 
 .quantity-selector {
     display: flex;
     align-items: center;
     background-color: #222;
-    border-radius: 4px;
+    border-radius: 0.25rem;
     overflow: hidden;
     border: 1px solid #333;
 }
@@ -357,8 +334,8 @@ body {
     background: none;
     border: none;
     color: #fff;
-    width: 32px;
-    height: 32px;
+    width: 2rem;
+    height: 2rem;
     cursor: pointer;
     font-size: 0.9rem;
     display: flex;
@@ -373,8 +350,8 @@ body {
 }
 
 .qty-input {
-    width: 35px;
-    height: 32px;
+    width: 2.1875rem;
+    height: 2rem;
     border: none;
     background: none;
     color: #fff;
@@ -383,7 +360,7 @@ body {
     font-weight: 700;
     font-size: 0.9rem;
     outline: none;
-    pointer-events: none; /* Chỉ cho phép thay đổi qua nút +/- */
+    pointer-events: none;
 }
 
 /* 6. SIDEBAR TÓM TẮT ĐƠN HÀNG */
@@ -395,71 +372,62 @@ body {
 .summary-card {
     background-color: var(--card-bg);
     border: 1px solid var(--border-color);
-    border-radius: 8px;
-    padding: 25px;
-    position: sticky;
-    top: 30px;
+    border-radius: 0.5rem;
+    padding: 1.5625rem; /* 25px */
+    position: relative; /* Mobile: relative */
+    top: 0;
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 1.25rem; /* 20px */
 }
 
 .summary-title {
     font-size: 1.1rem;
     font-weight: 700;
-    letter-spacing: 1.5px;
+    letter-spacing: 0.09375rem;
     text-transform: uppercase;
     text-align: center;
-    padding-bottom: 12px;
+    padding-bottom: 0.75rem;
     border-bottom: 1px solid var(--border-color);
 }
 
-/* Tóm tắt phim */
-.summary-movie-info {
+.summary-movie-info, .summary-details, .summary-combos-selected {
     border-bottom: 1px solid var(--border-color);
-    padding-bottom: 15px;
+    padding-bottom: 0.9375rem;
 }
 
 .summary-movie-info h3 {
     font-size: 1.1rem;
     font-weight: 700;
     text-transform: uppercase;
-    margin-bottom: 8px;
+    margin-bottom: 0.5rem;
 }
 
 .summary-movie-meta {
     display: flex;
     align-items: center;
-    gap: 10px;
-    margin-bottom: 8px;
+    gap: 0.625rem;
+    margin-bottom: 0.5rem;
 }
 
 .summary-movie-meta .age-tag {
     background-color: #fff;
     color: #000;
-    padding: 2px 6px;
-    border-radius: 4px;
+    padding: 0.125rem 0.375rem;
+    border-radius: 0.25rem;
     font-weight: 700;
     font-size: 0.75rem;
 }
 
-.summary-movie-meta #sHall {
+.summary-movie-meta #sHall, .summary-datetime {
     font-size: 0.85rem;
     color: var(--text-secondary);
 }
 
-.summary-datetime {
-    font-size: 0.8rem;
-    color: var(--text-secondary);
-}
-
-/* Tóm tắt chi tiết ghế */
 .summary-details {
-    border-bottom: 1px solid var(--border-color);
-    padding-bottom: 15px;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 0.625rem;
 }
 
 .summary-row {
@@ -468,45 +436,29 @@ body {
     font-size: 0.9rem;
 }
 
-.summary-row span {
-    color: var(--text-secondary);
-}
-
-.summary-row strong {
-    color: #fff;
-}
-
-/* Tóm tắt Combo đã chọn */
-.summary-combos-selected {
-    border-bottom: 1px solid var(--border-color);
-    padding-bottom: 15px;
-}
+.summary-row span { color: var(--text-secondary); }
+.summary-row strong { color: #fff; }
 
 .summary-combos-selected h4 {
     font-size: 0.85rem;
     color: var(--text-secondary);
     text-transform: uppercase;
-    margin-bottom: 10px;
-    letter-spacing: 0.5px;
+    margin-bottom: 0.625rem;
+    letter-spacing: 0.03125rem;
 }
 
 #selectedCombosList {
     list-style: none;
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    max-height: 120px;
+    gap: 0.5rem;
+    max-height: 7.5rem;
     overflow-y: auto;
-    padding-right: 5px;
+    padding-right: 0.3125rem;
 }
 
-#selectedCombosList::-webkit-scrollbar {
-    width: 3px;
-}
-
-#selectedCombosList::-webkit-scrollbar-thumb {
-    background: #333;
-}
+#selectedCombosList::-webkit-scrollbar { width: 0.1875rem; }
+#selectedCombosList::-webkit-scrollbar-thumb { background: #333; }
 
 .selected-combo-li {
     display: flex;
@@ -517,7 +469,7 @@ body {
 }
 
 @keyframes slideIn {
-    from { opacity: 0; transform: translateY(5px); }
+    from { opacity: 0; transform: translateY(0.3125rem); }
     to { opacity: 1; transform: translateY(0); }
 }
 
@@ -527,11 +479,10 @@ body {
     font-style: italic;
 }
 
-/* Tổng tiền và Nút xác nhận */
 .summary-total-section {
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 0.9375rem;
 }
 
 .total-row {
@@ -556,10 +507,10 @@ body {
     background-color: #fff;
     color: #000;
     border: none;
-    padding: 15px;
+    padding: 0.9375rem;
     font-weight: 700;
     font-size: 0.95rem;
-    border-radius: 5px;
+    border-radius: 0.3125rem;
     cursor: pointer;
     text-align: center;
     transition: var(--transition-speed);
@@ -567,47 +518,153 @@ body {
 
 .confirm-combos-btn:hover {
     background-color: #ccc;
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(255,255,255,0.1);
+    transform: translateY(-0.125rem);
+    box-shadow: 0 0.3125rem 0.9375rem rgba(255,255,255,0.1);
 }
 
 .confirm-combos-btn:active {
     transform: translateY(0);
 }
 
-/* 7. RESPONSIVE */
-@media (max-width: 900px) {
-    .combo-container {
-        grid-template-columns: 1fr;
-        margin-top: 15px;
+/* MOBILE */
+@media screen and (max-width: 767px) {
+    .booking-header {
+        padding: 0.625rem 0.75rem;
     }
-    
+
+    .header-title {
+        font-size: 0.8rem;
+        letter-spacing: 0.04rem;
+    }
+
+    .progress-container {
+        padding: 0.5rem 0.5rem 0.25rem;
+    }
+
+    .progress-step .step-label {
+        font-size: 0.55rem;
+        max-width: 4.25rem;
+        line-height: 1.15;
+    }
+
+    .progress-step .step-icon {
+        width: 1.65rem;
+        height: 1.65rem;
+        font-size: 0.7rem;
+    }
+
+    .combo-container {
+        padding: 0 0.75rem 1rem;
+        margin: 0.5rem auto;
+        gap: 1rem;
+    }
+
+    .combo-item {
+        flex-direction: row;
+        align-items: stretch;
+    }
+
+    .combo-img-wrapper {
+        width: 5.5rem;
+        height: auto;
+        min-height: 5rem;
+    }
+
+    .combo-info {
+        padding: 0.625rem 0.75rem;
+    }
+
+    .combo-title {
+        font-size: 0.8rem;
+    }
+
+    .combo-price {
+        font-size: 0.85rem;
+    }
+
+    .combo-description {
+        font-size: 0.75rem;
+        margin: 0.25rem 0;
+    }
+
     .summary-card {
-        position: relative;
-        top: 0;
+        position: sticky;
+        bottom: 0;
+        z-index: 15;
+        background: #0a0a0a;
+        border: 1px solid #333;
+        border-radius: 0.5rem;
+        padding: 0.875rem;
+        box-shadow: 0 -0.25rem 1rem rgba(0, 0, 0, 0.5);
+    }
+
+    .summary-movie-info h3 {
+        font-size: 0.8rem;
+        line-height: 1.3;
+    }
+
+    .summary-title {
+        font-size: 0.9rem;
+    }
+
+    .grand-total {
+        font-size: 1.2rem;
+    }
+
+    .confirm-combos-btn {
+        padding: 0.75rem;
+        font-size: 0.875rem;
+    }
+
+    .timer-box {
+        font-size: 0.8rem;
+        padding: 0.4rem 0.75rem;
+        max-width: 100%;
+        flex-wrap: wrap;
+        justify-content: center;
+        text-align: center;
     }
 }
 
-@media (max-width: 600px) {
+/* TABLET (768px - 1024px) */
+@media screen and (min-width: 768px) {
     .combo-item {
-        flex-direction: column;
+        flex-direction: row; /* Horizontal layout for tablet+ */
+    }
+    
+    .combo-item:hover {
+        transform: translateX(0.3125rem);
     }
     
     .combo-img-wrapper {
-        width: 100%;
-        height: 160px;
+        width: 11.25rem; /* 180px */
+        height: 8.4375rem; /* 135px */
     }
     
     .combo-info {
-        padding: 15px;
+        padding: 0.9375rem 1.25rem;
     }
     
     .booking-header {
-        padding: 15px 20px;
+        padding: 1.25rem 2.5rem;
     }
     
     .header-title {
-        margin-right: 0;
-        font-size: 1rem;
+        font-size: 1.2rem;
+        margin-right: 6.25rem;
+    }
+}
+
+/* DESKTOP (> 1024px) */
+@media screen and (min-width: 1025px) {
+    .combo-container {
+        grid-template-columns: 1fr 23.75rem; /* 1fr 380px */
+        margin: 1.875rem auto; /* 30px */
+        max-width: 75rem; /* 1200px */
+    }
+    
+    .summary-card {
+        position: sticky;
+        top: 1.875rem; /* 30px */
     }
 }

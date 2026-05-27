@@ -34,7 +34,7 @@ npm install
 npm run dev
 ```
 
-4. Mở trình duyệt: **http://localhost:3015**
+4. Mở trình duyệt: **http://localhost:3003**
 
 ## Scripts
 
