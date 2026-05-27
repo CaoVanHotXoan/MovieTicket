@@ -1,50 +1,48 @@
 /* ========================================================
    FILE CSS RIÊNG: AboutUs.css
    Theme: Tối giản Trắng Đen, Hiện đại
+   Mobile-First Approach
    ======================================================== */
 
-/* Container chính của nội dung, chiếm 70% chiều ngang */
 .about-main {
-    padding-top: 120px;
-    /* Tránh bị header đè */
+    padding-top: 5rem; /* 80px */
     min-height: 100vh;
     background-color: #050505;
 }
 
 .about-container {
-    max-width: 70%;
+    max-width: 95%; /* 95% on mobile */
     margin: 0 auto;
     text-align: center;
 }
 
 .about-title {
-    font-size: 3rem;
+    font-size: 2rem; /* 32px */
     font-weight: 800;
-    letter-spacing: 5px;
-    margin-bottom: 10px;
+    letter-spacing: 0.125rem; /* 2px */
+    margin-bottom: 0.625rem; /* 10px */
     color: #fff;
     text-transform: uppercase;
 }
 
 .about-subtitle {
     color: #888;
-    font-size: 1.1rem;
-    margin-bottom: 60px;
+    font-size: 0.9375rem; /* 15px */
+    margin-bottom: 2.5rem; /* 40px */
 }
 
-/* TEAM GRID: Hiển thị danh sách thành viên */
+/* TEAM GRID */
 .team-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 40px;
-    margin-bottom: 100px;
+    grid-template-columns: repeat(auto-fit, minmax(15.625rem, 1fr)); /* 250px */
+    gap: 1.25rem; /* 20px */
+    margin-bottom: 3.125rem; /* 50px */
 }
 
-/* TEAM CARD: Layout bên ngoài (Hình trên, Tên dưới) */
 .team-card {
     background: #111;
     border: 1px solid #222;
-    border-radius: 15px;
+    border-radius: 0.9375rem; /* 15px */
     overflow: hidden;
     cursor: pointer;
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -52,9 +50,9 @@
 }
 
 .team-card:hover {
-    transform: translateY(-15px);
+    transform: translateY(-0.625rem); /* -10px */
     border-color: #ff0000;
-    box-shadow: 0 20px 40px rgba(255, 0, 0, 0.1);
+    box-shadow: 0 1.25rem 2.5rem rgba(255, 0, 0, 0.1); /* 0 20px 40px */
 }
 
 .card-image {
@@ -68,36 +66,33 @@
     height: 100%;
     object-fit: cover;
     filter: grayscale(100%);
-    /* Hiệu ứng đen trắng */
     transition: 0.5s ease;
 }
 
 .team-card:hover .card-image img {
     filter: grayscale(0%);
-    /* Hiện màu khi hover */
     transform: scale(1.1);
 }
 
 .card-info {
-    padding: 25px;
+    padding: 1.25rem; /* 20px */
 }
 
 .card-info h3 {
-    font-size: 1.4rem;
-    margin-bottom: 5px;
+    font-size: 1.125rem; /* 18px */
+    margin-bottom: 0.3125rem; /* 5px */
     color: #fff;
-    letter-spacing: 1px;
+    letter-spacing: 0.0625rem; /* 1px */
 }
 
 .card-info p {
     color: #ff0000;
-    /* Màu nhấn */
-    font-size: 0.9rem;
+    font-size: 0.8125rem; /* 13px */
     text-transform: uppercase;
     font-weight: 600;
 }
 
-/* MODAL: Layout bên trong */
+/* MODAL */
 .member-modal {
     position: fixed;
     top: 0;
@@ -106,7 +101,6 @@
     height: 100%;
     background: rgba(0, 0, 0, 0.95);
     display: none;
-    /* Ẩn mặc định */
     justify-content: center;
     align-items: center;
     z-index: 1001;
@@ -114,40 +108,32 @@
 }
 
 .modal-content {
-    width: 800px;
-    max-width: 90%;
+    width: 90%; /* Mobile base */
+    max-width: 50rem; /* 800px */
     background: #111;
     border: 1px solid #333;
-    border-radius: 20px;
+    border-radius: 1.25rem; /* 20px */
     position: relative;
-    padding: 60px;
+    padding: 2.5rem 1.25rem; /* 40px 20px */
     animation: slideUp 0.5s ease;
 }
 
 @keyframes slideUp {
-    from {
-        transform: translateY(50px);
-        opacity: 0;
-    }
-
-    to {
-        transform: translateY(0);
-        opacity: 1;
-    }
+    from { transform: translateY(3.125rem); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
 }
 
-/* Nút thoát (Mũi tên bên góc trái) */
 .close-modal {
     position: absolute;
-    top: 30px;
-    left: 30px;
+    top: 0.625rem; /* 10px */
+    left: 0.625rem; /* 10px */
     background: transparent;
     border: 1px solid #444;
     color: #fff;
-    width: 50px;
-    height: 50px;
+    width: 2.5rem; /* 40px */
+    height: 2.5rem; /* 40px */
     border-radius: 50%;
-    font-size: 20px;
+    font-size: 1.25rem; /* 20px */
     cursor: pointer;
     transition: 0.3s;
     display: flex;
@@ -158,23 +144,25 @@
 .close-modal:hover {
     background: #ff0000;
     border-color: #ff0000;
-    transform: translateX(-5px);
+    transform: translateX(-0.3125rem); /* -5px */
 }
 
-/* Layout bên trong modal (Góc trái hình, kế bên tên, dưới mô tả) */
 .modal-top {
     display: flex;
-    gap: 40px;
+    flex-direction: column; /* Mobile base */
+    text-align: center;
+    gap: 1.25rem; /* 20px */
     align-items: center;
-    margin-bottom: 40px;
+    margin-bottom: 1.875rem; /* 30px */
+    margin-top: 2.5rem; /* spacing for close btn */
 }
 
 .modal-image {
-    width: 180px;
-    height: 180px;
+    width: 7.5rem; /* 120px */
+    height: 7.5rem; /* 120px */
     border-radius: 50%;
     overflow: hidden;
-    border: 4px solid #ff0000;
+    border: 0.25rem solid #ff0000; /* 4px */
     flex-shrink: 0;
 }
 
@@ -185,43 +173,146 @@
 }
 
 .modal-header-info h2 {
-    font-size: 2.5rem;
+    font-size: 1.5rem; /* 24px */
     color: #fff;
-    margin-bottom: 10px;
+    margin-bottom: 0.625rem; /* 10px */
 }
 
 .role-tag {
     display: inline-block;
-    padding: 5px 15px;
+    padding: 0.3125rem 0.9375rem; /* 5px 15px */
     background: #ff0000;
     color: #fff;
-    font-size: 0.9rem;
+    font-size: 0.8125rem; /* 13px */
     font-weight: bold;
-    border-radius: 5px;
+    border-radius: 0.3125rem; /* 5px */
 }
 
 .modal-description h3 {
     color: #fff;
-    font-size: 1.2rem;
-    margin-bottom: 15px;
-    border-left: 4px solid #ff0000;
-    padding-left: 15px;
+    font-size: 1rem; /* 16px */
+    margin-bottom: 0.625rem; /* 10px */
+    border-left: 0.25rem solid #ff0000; /* 4px */
+    padding-left: 0.625rem; /* 10px */
+    text-align: left;
 }
 
 .modal-description p {
     color: #aaa;
-    line-height: 1.8;
-    font-size: 1.1rem;
+    line-height: 1.6;
+    font-size: 0.9375rem; /* 15px */
+    text-align: left;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-    .modal-top {
-        flex-direction: column;
-        text-align: center;
+/* ========================================================
+   TABLET BREAKPOINT (768px - 1024px)
+======================================================== */
+@media screen and (min-width: 768px) {
+    .about-title {
+        font-size: 2.5rem; /* 40px */
+        letter-spacing: 0.25rem; /* 4px */
     }
-
+    
+    .team-grid {
+        gap: 1.875rem; /* 30px */
+    }
+    
     .modal-content {
-        padding: 40px 20px;
+        padding: 3.125rem 2.5rem; /* 50px 40px */
+    }
+    
+    .modal-top {
+        flex-direction: row;
+        text-align: left;
+        margin-top: 0;
+        gap: 1.875rem; /* 30px */
+    }
+    
+    .modal-image {
+        width: 9.375rem; /* 150px */
+        height: 9.375rem; /* 150px */
+    }
+    
+    .close-modal {
+        top: 1.25rem; /* 20px */
+        left: 1.25rem; /* 20px */
+    }
+}
+
+/* ========================================================
+   DESKTOP BREAKPOINT (> 1024px)
+======================================================== */
+@media screen and (min-width: 1025px) {
+    .about-main {
+        padding-top: 7.5rem; /* 120px */
+    }
+    
+    .about-container {
+        max-width: 70%;
+    }
+    
+    .about-title {
+        font-size: 3rem; /* 48px */
+        letter-spacing: 0.3125rem; /* 5px */
+    }
+    
+    .about-subtitle {
+        font-size: 1.1rem;
+        margin-bottom: 3.75rem; /* 60px */
+    }
+    
+    .team-grid {
+        gap: 2.5rem; /* 40px */
+        margin-bottom: 6.25rem; /* 100px */
+    }
+    
+    .card-info {
+        padding: 1.5625rem; /* 25px */
+    }
+    
+    .card-info h3 {
+        font-size: 1.4rem;
+    }
+    
+    .card-info p {
+        font-size: 0.9rem;
+    }
+    
+    .modal-content {
+        padding: 3.75rem; /* 60px */
+    }
+    
+    .modal-top {
+        gap: 2.5rem; /* 40px */
+        margin-bottom: 2.5rem; /* 40px */
+    }
+    
+    .modal-image {
+        width: 11.25rem; /* 180px */
+        height: 11.25rem; /* 180px */
+    }
+    
+    .modal-header-info h2 {
+        font-size: 2.5rem; /* 40px */
+    }
+    
+    .role-tag {
+        font-size: 0.9rem;
+    }
+    
+    .modal-description h3 {
+        font-size: 1.2rem;
+        margin-bottom: 0.9375rem; /* 15px */
+        padding-left: 0.9375rem; /* 15px */
+    }
+    
+    .modal-description p {
+        font-size: 1.1rem;
+        line-height: 1.8;
+    }
+    
+    .close-modal {
+        top: 1.875rem; /* 30px */
+        left: 1.875rem; /* 30px */
     }
 }

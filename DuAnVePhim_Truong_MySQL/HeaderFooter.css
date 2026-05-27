@@ -1,7 +1,7 @@
 /* ========================================================
    FILE CSS DÙNG CHUNG: HeaderFooter.css
-   Style cho Header (Navigation, Search, Login) & Footer
    Theme: Tối giản Trắng Đen, Hover Đỏ
+   Mobile-First Approach
 ======================================================== */
 
 /* Reset CSS cơ bản */
@@ -12,9 +12,22 @@
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
+:root {
+    --primary-color: #ff0000;
+    --bg-color: #050505;
+    --text-color: #ffffff;
+    --font-base: 16px;
+}
+
+html {
+    font-size: var(--font-base);
+    scroll-behavior: smooth;
+}
+
 body {
-    background-color: #050505; /* Black theme */
-    color: #ffffff;            /* White text */
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    overflow-x: hidden;
 }
 
 a {
@@ -22,128 +35,233 @@ a {
     color: inherit;
 }
 
+img,
+video {
+    max-width: 100%;
+    height: auto;
+    object-fit: cover;
+}
+
 /* ========================================================
-   HEADER STYLES
+   HEADER STYLES (MOBILE FIRST)
 ======================================================== */
 .main-header {
     width: 100%;
-    position: absolute; /* header nằm đè lên banner */
+    position: fixed;
+    /* Fixed on mobile for easy navigation */
     top: 0;
     left: 0;
-    z-index: 100; /* Nổi lên trên các thành phần khác */
-    background: linear-gradient(to bottom, rgba(0,0,0,0.8), rgba(0,0,0,0)); /* Gradient header mượt */
-    padding: 15px 0;
+    z-index: 100;
+    background: rgba(0, 0, 0, 0.95);
+    backdrop-filter: blur(4px);
+    padding: 0.75rem 0;
+    transition: all 0.3s ease;
 }
 
 .header-container {
-    max-width: 90%;
+    width: 95%;
     margin: 0 auto;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    position: relative;
+    min-height: 2.75rem;
 }
 
-/* LOGO: Góc trái (thiết kế nhỏ gọn) */
-.header-left .logo {
-    font-size: 24px;
-    font-weight: bold;
-    color: #ffffff;
-    letter-spacing: 2px;
+.hamburger-toggle {
+    display: inline-flex;
+    width: 2.375rem;
+    height: 2.375rem;
     border: 1px solid #fff;
-    padding: 5px 15px;
+    background: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    border-radius: 0.375rem;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    transition: 0.25s ease;
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1200;
+}
+
+.hamburger-toggle:hover {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+/* LOGO */
+.header-left {
+    margin-left: 3.25rem;
+    /* space for hamburger */
+}
+
+.header-left .logo {
+    font-size: 1.125rem;
+    font-weight: bold;
+    color: var(--text-color);
+    letter-spacing: 0.0625rem;
+    border: 1px solid #fff;
+    padding: 0.25rem 0.625rem;
     text-transform: uppercase;
     transition: 0.3s ease;
+    display: inline-block;
 }
 
 .header-left .logo:hover {
-    color: #ff0000;
-    border-color: #ff0000;
+    color: var(--primary-color);
+    border-color: var(--primary-color);
 }
 
-/* NAVBAR: Ở giữa */
+/* NAVBAR (MOBILE) */
+.header-center {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    left: 0;
+    width: min(20rem, 86vw);
+    background: #0f0f0f;
+    border: 1px solid #2a2a2a;
+    border-radius: 0.5rem;
+    padding: 0.75rem;
+    box-shadow: 0 0.75rem 1.875rem rgba(0, 0, 0, 0.45);
+    display: none;
+    z-index: 1190;
+}
+
+.main-header.mobile-menu-open .header-center {
+    display: block;
+}
+
 .header-center .nav-menu {
     list-style: none;
     display: flex;
-    gap: 30px;
+    flex-direction: column;
+    gap: 0.375rem;
 }
 
-.header-center .nav-menu > li {
-    position: relative;
-}
-
-.header-center .nav-menu > li > a {
-    font-size: 14px;
+.header-center .nav-menu>li>a {
+    font-size: 0.875rem;
     font-weight: 600;
-    letter-spacing: 1px;
-    padding: 10px 0;
+    letter-spacing: 0.0625rem;
+    padding: 0.625rem 0.375rem;
     text-transform: uppercase;
     transition: color 0.3s ease;
     display: flex;
     align-items: center;
-    gap: 5px;
+    gap: 0.3125rem;
+    width: 100%;
+    border-bottom: 1px solid #1f1f1f;
 }
 
-/* Hiệu ứng hover chuyển màu đỏ */
-.header-center .nav-menu > li > a:hover {
-    color: #ff0000;
+.header-center .nav-menu>li:last-child>a {
+    border-bottom: none;
+}
+
+.header-center .nav-menu>li>a:hover {
+    color: var(--primary-color);
 }
 
 .nav-arrow {
-    font-size: 10px;
+    font-size: 0.625rem;
 }
 
-/* DROPDOWN MENU */
+/* DROPDOWN MENU (MOBILE) */
 .dropdown .dropdown-menu {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    background-color: rgba(0, 0, 0, 0.9);
     list-style: none;
-    min-width: 160px;
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(10px);
-    transition: all 0.3s ease;
-    border: 1px solid #333;
-    padding: 10px 0;
-    border-top: 2px solid #ff0000;
+    background: #161616;
+    border: 1px solid #222;
+    padding: 0.625rem 0;
+    margin-top: 0.25rem;
+    display: none;
+    /* hidden by default on mobile */
 }
 
-.dropdown:hover .dropdown-menu {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
+.header-center .dropdown.mobile-open .dropdown-menu {
+    display: block;
 }
 
 .dropdown-menu li a {
     display: block;
-    padding: 10px 20px;
-    font-size: 13px;
+    padding: 0.625rem 1.25rem;
+    font-size: 0.8125rem;
     text-transform: uppercase;
     transition: 0.3s ease;
     color: #ccc;
+    white-space: nowrap;
 }
 
 .dropdown-menu li a:hover {
     background-color: #1a1a1a;
-    color: #ff0000;
+    color: var(--primary-color);
+    padding-left: 1.5rem;
 }
 
-/* TÌM KIẾM & ĐĂNG NHẬP: Góc phải */
+/* Active state cho menu links */
+.header-center .nav-menu>li>a.active {
+    color: var(--primary-color);
+}
+
+/* MOBILE SEARCH SLOT */
+.mobile-search-slot {
+    margin-bottom: 0.625rem;
+}
+
+.mobile-search-slot:empty {
+    display: none;
+}
+
+.mobile-search-slot .search-box {
+    width: 100%;
+    display: flex;
+    border: 1px solid #2a2a2a;
+    border-radius: 0.5rem;
+    background: #111;
+    padding: 0.375rem 0.5rem;
+    position: relative;
+}
+
+.mobile-search-slot .search-txt {
+    width: 100%;
+    border: none;
+    background: none;
+    outline: none;
+    color: var(--text-color);
+    font-size: 0.875rem;
+    padding: 0 0.5rem;
+    line-height: 1.875rem;
+}
+
+.mobile-search-slot .search-btn {
+    width: 2rem;
+    height: 2rem;
+    flex-shrink: 0;
+    color: var(--text-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.125rem;
+}
+
+/* TÌM KIẾM & ĐĂNG NHẬP: Góc phải (MOBILE) */
 .header-right {
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 1.25rem;
 }
 
-/* Search bar ẩn/hiện tự động */
+/* On mobile < 640px, search-box is in mobile-search-slot. 
+   When width >= 640px, it moves to header-right and takes this style. */
 .search-box {
     display: flex;
     align-items: center;
     background-color: transparent;
-    border-radius: 40px;
-    padding: 5px;
+    border-radius: 2.5rem;
+    padding: 0.3125rem;
     transition: 0.4s ease;
+    position: relative;
 }
 
 .search-txt {
@@ -151,108 +269,89 @@ a {
     background: none;
     outline: none;
     padding: 0;
-    color: #ffffff;
-    font-size: 14px;
-    width: 0; /* Ẩn đi mặc định */
+    color: var(--text-color);
+    font-size: 0.875rem;
+    width: 0;
     transition: 0.4s ease;
-    line-height: 25px;
+    line-height: 1.5625rem;
 }
 
 .search-btn {
-    color: #ffffff;
-    float: right;
-    width: 30px;
-    height: 30px;
+    color: var(--text-color);
+    width: 1.875rem;
+    height: 1.875rem;
     border-radius: 50%;
     background: transparent;
     display: flex;
     justify-content: center;
     align-items: center;
     transition: 0.4s;
-    font-size: 18px;
+    font-size: 1.125rem;
 }
 
-/* Khi hover vào search box -> Mở rộng input text */
 .search-box:hover {
     background-color: #222;
 }
 
 .search-box:hover .search-txt {
-    width: 200px; /* Độ rộng khi hiện form nhập */
-    padding: 0 10px;
+    width: 12.5rem;
+    padding: 0 0.625rem;
 }
 
-.search-box:hover .search-btn, 
+.search-box:hover .search-btn,
 .search-btn:hover {
-    color: #ff0000;
+    color: var(--primary-color);
     background: #111;
 }
 
-/* Login button: dạng icon */
-.login-icon {
-    color: #ffffff;
-    font-size: 20px;
-    transition: 0.3s ease;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.login-icon:hover {
-    color: #ff0000;
-}
-
-/* Nút chuyển hướng sang trang quản trị Admin */
+/* Login button */
+.login-icon,
 .admin-link-btn {
-    color: #ffffff;
-    font-size: 20px;
+    color: var(--text-color);
+    font-size: 1.25rem;
     transition: 0.3s ease;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
+.login-icon:hover,
 .admin-link-btn:hover {
-    color: #ff0000;
+    color: var(--primary-color);
 }
 
-/* ========================================================
-   SEARCH SUGGESTIONS STYLES
-   ======================================================== */
-.search-box {
-    position: relative; /* Để search-suggestions căn theo search-box */
-}
-
+/* SEARCH SUGGESTIONS */
 .search-suggestions {
     position: absolute;
     top: 100%;
     right: 0;
-    width: 350px;
+    width: 100%;
+    /* Mobile width */
     background-color: #111;
     border: 1px solid #333;
-    border-radius: 8px;
-    margin-top: 10px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    border-radius: 0.5rem;
+    margin-top: 0.625rem;
+    box-shadow: 0 0.625rem 1.875rem rgba(0, 0, 0, 0.5);
     display: none;
     z-index: 1000;
-    max-height: 400px;
+    max-height: 25rem;
     overflow-y: auto;
 }
 
-/* Tùy chỉnh thanh cuộn cho đề xuất */
 .search-suggestions::-webkit-scrollbar {
-    width: 5px;
+    width: 0.3125rem;
 }
+
 .search-suggestions::-webkit-scrollbar-thumb {
     background: #333;
-    border-radius: 10px;
+    border-radius: 0.625rem;
 }
 
 .suggestion-item {
     display: flex;
     align-items: center;
-    gap: 15px;
-    padding: 10px 15px;
+    gap: 0.9375rem;
+    padding: 0.625rem 0.9375rem;
     cursor: pointer;
     transition: 0.3s;
     border-bottom: 1px solid #1a1a1a;
@@ -267,101 +366,98 @@ a {
 }
 
 .suggestion-item img {
-    width: 45px;
-    height: 65px;
+    width: 2.8125rem;
+    height: 4.0625rem;
     object-fit: cover;
-    border-radius: 4px;
+    border-radius: 0.25rem;
 }
 
 .suggestion-info {
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 0.3125rem;
 }
 
 .suggestion-title {
     color: #fff;
-    font-size: 14px;
+    font-size: 0.875rem;
     font-weight: 600;
     text-transform: uppercase;
 }
 
 .suggestion-item:hover .suggestion-title {
-    color: #ff0000;
+    color: var(--primary-color);
 }
 
 .suggestion-category {
     color: #666;
-    font-size: 11px;
+    font-size: 0.6875rem;
     text-transform: uppercase;
 }
 
 .no-suggestion {
-    padding: 20px;
+    padding: 1.25rem;
     text-align: center;
     color: #666;
-    font-size: 14px;
+    font-size: 0.875rem;
 }
 
 /* ========================================================
-   FOOTER STYLES
+   FOOTER STYLES (MOBILE FIRST)
 ======================================================== */
 .main-footer {
     width: 100%;
     background-color: #0a0a0a;
     border-top: 1px solid #222;
-    padding: 50px 0 20px;
-    margin-top: 50px;
+    padding: 3.125rem 0 1.25rem;
+    margin-top: 3.125rem;
 }
 
 .footer-content {
-    max-width: 80%;
+    width: 90%;
     margin: 0 auto;
     display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 30px;
+    flex-direction: column;
+    /* Mobile first: column layout */
+    gap: 1.875rem;
 }
 
-.footer-logo-section {
-    flex: 1;
-    min-width: 250px;
+.footer-logo-section,
+.footer-links-section,
+.footer-contact-section {
+    width: 100%;
 }
 
 .footer-logo {
-    font-size: 24px;
+    font-size: 1.5rem;
     font-weight: bold;
-    color: #ffffff;
-    letter-spacing: 2px;
+    color: var(--text-color);
+    letter-spacing: 0.125rem;
     border: 1px solid #fff;
-    padding: 5px 15px;
+    padding: 0.3125rem 0.9375rem;
     display: inline-block;
-    margin-bottom: 15px;
+    margin-bottom: 0.9375rem;
 }
 
 .footer-logo:hover {
-    color: #ff0000;
-    border-color: #ff0000;
+    color: var(--primary-color);
+    border-color: var(--primary-color);
 }
 
 .footer-logo-section p {
     color: #aaa;
-    font-size: 14px;
+    font-size: 0.875rem;
     line-height: 1.6;
 }
 
-.footer-links-section, .footer-contact-section {
-    flex: 1;
-    min-width: 200px;
-}
-
-.footer-links-section h3, .footer-contact-section h3 {
-    font-size: 16px;
-    color: #ffffff;
-    margin-bottom: 20px;
+.footer-links-section h3,
+.footer-contact-section h3 {
+    font-size: 1rem;
+    color: var(--text-color);
+    margin-bottom: 1.25rem;
     text-transform: uppercase;
     font-weight: 600;
-    letter-spacing: 1px;
+    letter-spacing: 0.0625rem;
 }
 
 .footer-links-section ul {
@@ -369,47 +465,197 @@ a {
 }
 
 .footer-links-section ul li {
-    margin-bottom: 10px;
+    margin-bottom: 0.625rem;
 }
 
 .footer-contact-section h3 a {
-    color: #ffffff;
+    color: var(--text-color);
     transition: color 0.3s ease;
 }
 
 .footer-contact-section h3 a:hover {
-    color: #ff0000;
+    color: var(--primary-color);
 }
 
-.footer-links-section ul li a, 
+.footer-links-section ul li a,
 .footer-contact-section p {
     color: #aaa;
-    font-size: 14px;
+    font-size: 0.875rem;
     transition: color 0.3s ease;
 }
 
 .footer-contact-section p {
-    margin-bottom: 10px;
+    margin-bottom: 0.625rem;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 0.625rem;
 }
 
 .footer-contact-section p i {
     color: #fff;
-    width: 20px;
+    width: 1.25rem;
     text-align: center;
 }
 
 .footer-links-section ul li a:hover {
-    color: #ff0000;
+    color: var(--primary-color);
 }
 
 .footer-bottom {
     text-align: center;
-    margin-top: 40px;
-    padding-top: 20px;
+    margin-top: 2.5rem;
+    padding-top: 1.25rem;
     border-top: 1px solid #1a1a1a;
     color: #666;
-    font-size: 12px;
+    font-size: 0.75rem;
+}
+
+/* ========================================================
+   SMALL TABLET / LARGE PHONE (640px+)
+======================================================== */
+@media (min-width: 640px) and (max-width: 1024px) {
+    .header-right .search-box {
+        background-color: #111;
+        border: 1px solid #2a2a2a;
+        border-radius: 2.5rem;
+        padding: 0.25rem 0.5rem;
+    }
+
+    .header-right .search-txt {
+        width: clamp(5rem, 16vw, 9rem);
+        padding: 0 0.5rem;
+    }
+
+    .header-right .search-box:hover .search-txt {
+        width: clamp(7rem, 20vw, 11rem);
+    }
+}
+
+/* ========================================================
+   TABLET BREAKPOINT (768px - 1024px)
+======================================================== */
+@media (min-width: 768px) {
+    .footer-content {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: space-between;
+    }
+
+    .footer-logo-section {
+        flex: 1 1 100%;
+        margin-bottom: 1rem;
+    }
+
+    .footer-links-section,
+    .footer-contact-section {
+        flex: 1 1 45%;
+    }
+}
+
+/* ========================================================
+   DESKTOP BREAKPOINT (> 1024px)
+======================================================== */
+@media (min-width: 1025px) {
+    .main-header {
+        position: absolute;
+        /* header nằm đè lên banner */
+        background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0));
+        padding: 0.9375rem 0;
+        backdrop-filter: none;
+    }
+
+    .header-container {
+        width: 90%;
+        max-width: 90%;
+        min-height: auto;
+    }
+
+    .hamburger-toggle {
+        display: none;
+        /* Hide hamburger on desktop */
+    }
+
+    .header-left {
+        margin-left: 0;
+    }
+
+    .header-left .logo {
+        font-size: 1.5rem;
+        padding: 0.3125rem 0.9375rem;
+        letter-spacing: 0.125rem;
+    }
+
+    .header-center {
+        position: static;
+        width: auto;
+        background: transparent;
+        border: none;
+        padding: 0;
+        box-shadow: none;
+        display: block !important;
+        /* Force display on desktop */
+    }
+
+    .header-center .nav-menu {
+        flex-direction: row;
+        gap: 1.875rem;
+    }
+
+    .header-center .nav-menu>li>a {
+        border-bottom: none;
+        padding: 0.625rem 0;
+    }
+
+    /* DROPDOWN — cần position relative để menu con định vị đúng */
+    .dropdown {
+        position: relative;
+    }
+
+    /* DROPDOWN MENU (DESKTOP) */
+    .dropdown .dropdown-menu {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        background-color: rgba(0, 0, 0, 0.95);
+        min-width: 11rem;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(0.625rem);
+        transition: all 0.3s ease;
+        border: 1px solid #333;
+        border-top: 2px solid var(--primary-color);
+        border-radius: 0 0 0.5rem 0.5rem;
+        margin-top: 0;
+        display: block;
+        padding: 0.375rem 0;
+        z-index: 1100;
+        backdrop-filter: blur(8px);
+        box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.5);
+    }
+
+    .dropdown:hover .dropdown-menu {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+
+    .search-suggestions {
+        width: 21.875rem;
+        /* Wider suggestions on desktop */
+    }
+
+    /* FOOTER (DESKTOP) */
+    .footer-content {
+        flex-wrap: nowrap;
+    }
+
+    .footer-logo-section {
+        flex: 1;
+        margin-bottom: 0;
+    }
+
+    .footer-links-section,
+    .footer-contact-section {
+        flex: 1;
+    }
 }

@@ -1,39 +1,41 @@
 /* Movies.css - Dành riêng cho trang Danh sách Phim */
+/* Mobile-First Approach */
 
 /* 1. Layout chính */
 .movies-main {
-    padding-top: 120px; /* Cách header tuyệt đối */
+    padding-top: 7.5rem; /* 120px */
     min-height: 80vh;
 }
 
 .movies-container {
-    width: 90%;
+    width: 95%;
     margin: 0 auto;
     display: flex;
-    gap: 40px;
+    flex-direction: column; /* Mobile base */
+    gap: 1.25rem;
 }
 
-/* 2. Sidebar Bộ lọc (Bên trái) */
+/* 2. Sidebar Bộ lọc */
 .filter-sidebar {
-    flex: 0 0 250px;
+    width: 100%; /* Mobile base */
     background-color: #111;
-    padding: 25px;
-    border-radius: 8px;
+    padding: 1.5625rem; /* 25px */
+    border-radius: 0.5rem; /* 8px */
     height: fit-content;
     border: 1px solid #222;
 }
 
 .filter-title {
-    font-size: 18px;
+    font-size: 1.125rem; /* 18px */
     font-weight: bold;
-    margin-bottom: 25px;
-    border-left: 4px solid #ff0000;
-    padding-left: 10px;
+    margin-bottom: 1.5625rem;
+    border-left: 0.25rem solid var(--primary-color, #ff0000);
+    padding-left: 0.625rem;
     text-transform: uppercase;
 }
 
 .filter-group {
-    margin-bottom: 15px;
+    margin-bottom: 0.9375rem;
     border-bottom: 1px solid #222;
 }
 
@@ -45,31 +47,31 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 15px 0;
+    padding: 0.9375rem 0;
     cursor: pointer;
-    font-size: 14px;
+    font-size: 0.875rem;
     font-weight: 600;
     text-transform: uppercase;
     transition: 0.3s;
 }
 
 .filter-dropdown-btn:hover {
-    color: #ff0000;
+    color: var(--primary-color, #ff0000);
 }
 
 .filter-dropdown-content {
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    padding-bottom: 15px;
+    gap: 0.625rem;
+    padding-bottom: 0.9375rem;
 }
 
 .filter-item {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 0.625rem;
     cursor: pointer;
-    font-size: 14px;
+    font-size: 0.875rem;
     color: #aaa;
     transition: 0.3s;
 }
@@ -79,32 +81,32 @@
 }
 
 .filter-item input {
-    accent-color: #ff0000;
+    accent-color: var(--primary-color, #ff0000);
 }
 
-/* 3. Grid Danh sách Phim (Bên phải) */
+/* 3. Grid Danh sách Phim */
 .movies-content {
     flex: 1;
 }
 
 .movies-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 30px;
+    grid-template-columns: repeat(auto-fill, minmax(9.375rem, 1fr)); /* 150px on mobile */
+    gap: 1.25rem; /* 20px */
 }
 
-/* Tái sử dụng style Movie Card từ index.css nhưng tùy chỉnh cho grid */
+/* Tái sử dụng style Movie Card */
 .movie-card {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 0.75rem;
     cursor: pointer;
     transition: transform 0.3s ease;
 }
 
 .poster-wrapper {
     position: relative;
-    border-radius: 8px;
+    border-radius: 0.5rem;
     overflow: hidden;
     aspect-ratio: 2/3;
     border: 1px solid #222;
@@ -123,28 +125,28 @@
 
 .movie-tag {
     position: absolute;
-    bottom: 10px;
-    left: 10px;
+    bottom: 0.625rem;
+    left: 0.625rem;
     background-color: rgba(255, 0, 0, 0.9);
     color: #fff;
-    padding: 4px 8px;
-    font-size: 11px;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.6875rem;
     font-weight: bold;
-    border-radius: 3px;
+    border-radius: 0.1875rem;
     text-transform: uppercase;
     z-index: 2;
 }
 
 .age-tag {
     position: absolute;
-    top: 10px;
-    right: 10px;
+    top: 0.625rem;
+    right: 0.625rem;
     background-color: #ff9800;
     color: #fff;
-    padding: 3px 8px;
-    font-size: 11px;
+    padding: 0.1875rem 0.5rem;
+    font-size: 0.6875rem;
     font-weight: bold;
-    border-radius: 3px;
+    border-radius: 0.1875rem;
     z-index: 2;
 }
 
@@ -153,13 +155,12 @@
 }
 
 .movie-name {
-    font-size: 16px;
+    font-size: 0.875rem;
     font-weight: 600;
     color: #fff;
-    margin-bottom: 5px;
+    margin-bottom: 0.3125rem;
     text-transform: uppercase;
     transition: 0.3s;
-    /* Giới hạn 2 dòng cho tên phim */
     display: -webkit-box;
     -webkit-line-clamp: 2;
     line-clamp: 2;
@@ -168,11 +169,11 @@
 }
 
 .movie-card:hover .movie-name {
-    color: #ff0000;
+    color: var(--primary-color, #ff0000);
 }
 
 .release-date {
-    font-size: 13px;
+    font-size: 0.8125rem;
     color: #888;
 }
 
@@ -180,18 +181,38 @@
 .no-results {
     grid-column: 1 / -1;
     text-align: center;
-    padding: 50px;
+    padding: 3.125rem;
     color: #666;
-    font-size: 18px;
+    font-size: 1.125rem;
 }
 
-/* Responsive */
-@media screen and (max-width: 1024px) {
-    .movies-container {
-        flex-direction: column;
+/* TABLET */
+@media screen and (min-width: 768px) {
+    .movies-grid {
+        grid-template-columns: repeat(auto-fill, minmax(12.5rem, 1fr)); /* 200px */
+        gap: 1.5625rem; /* 25px */
     }
+}
+
+/* DESKTOP */
+@media screen and (min-width: 1025px) {
+    .movies-container {
+        width: 90%;
+        flex-direction: row;
+        gap: 2.5rem; /* 40px */
+    }
+    
     .filter-sidebar {
-        flex: none;
-        width: 100%;
+        flex: 0 0 15.625rem; /* 250px */
+        width: auto;
+    }
+    
+    .movies-grid {
+        grid-template-columns: repeat(auto-fill, minmax(13.75rem, 1fr)); /* 220px */
+        gap: 1.875rem; /* 30px */
+    }
+    
+    .movie-name {
+        font-size: 1rem; /* 16px */
     }
 }

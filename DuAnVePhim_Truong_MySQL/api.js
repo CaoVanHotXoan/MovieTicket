@@ -565,12 +565,59 @@ async function loadBookingPage() {
             window.location.href = '../Combo_BapNuoc/Combo.html';
         });
 
-        // Zoom ghế
+        // Zoom ghế + tự co vừa màn hình mobile
         let currentScale = 1;
+        let baseFitScale = 1;
         const seatMap = document.getElementById('seatMap');
+        const seatMapWrapper = document.querySelector('.seat-map-wrapper');
+
+        const applySeatMapScale = () => {
+            if (!seatMap) return;
+            seatMap.style.transform = `scale(${currentScale})`;
+            if (seatMapWrapper) {
+                const scaledH = seatMap.offsetHeight * currentScale;
+                seatMapWrapper.style.minHeight = `${scaledH + 24}px`;
+            }
+        };
+
+        const fitSeatMapToScreen = () => {
+            if (!seatMap || !seatMapWrapper || window.innerWidth >= 768) {
+                currentScale = 1;
+                baseFitScale = 1;
+                applySeatMapScale();
+                return;
+            }
+            seatMap.style.transform = 'scale(1)';
+            const mapW = seatMap.scrollWidth;
+            const available = seatMapWrapper.clientWidth - 8;
+            baseFitScale = mapW > available ? Math.max(0.45, available / mapW) : 1;
+            currentScale = baseFitScale;
+            applySeatMapScale();
+        };
+
         if (seatMap) {
-            document.getElementById('zoomIn').onclick = () => { currentScale = Math.min(currentScale + 0.1, 1.5); seatMap.style.transform = `scale(${currentScale})`; };
-            document.getElementById('zoomOut').onclick = () => { currentScale = Math.max(currentScale - 0.1, 0.5); seatMap.style.transform = `scale(${currentScale})`; };
+            requestAnimationFrame(() => {
+                fitSeatMapToScreen();
+                setTimeout(fitSeatMapToScreen, 100);
+            });
+            window.addEventListener('resize', () => {
+                clearTimeout(seatMap._resizeTimer);
+                seatMap._resizeTimer = setTimeout(fitSeatMapToScreen, 150);
+            });
+            const zoomInBtn = document.getElementById('zoomIn');
+            const zoomOutBtn = document.getElementById('zoomOut');
+            if (zoomInBtn) {
+                zoomInBtn.onclick = () => {
+                    currentScale = Math.min(currentScale + 0.08, 1.5);
+                    applySeatMapScale();
+                };
+            }
+            if (zoomOutBtn) {
+                zoomOutBtn.onclick = () => {
+                    currentScale = Math.max(currentScale - 0.08, baseFitScale * 0.85);
+                    applySeatMapScale();
+                };
+            }
         }
     } catch (error) { console.error(error); }
 }
@@ -665,14 +712,14 @@ async function loadHistoryPage() {
             item.className = 'history-item-bar';
             const date = new Date(inv.NgayDat);
             item.innerHTML = `
-                <div class="history-info" style="padding: 0 25px; flex: 1; display: flex; justify-content: space-between; align-items: center;">
-                    <div style="flex: 1; cursor: pointer;" class="history-detail-trigger">
-                        <div class="movie-name" style="font-size: 17px; font-weight: 800; color: #fff; text-transform: uppercase;">${inv.TenPhim || 'PHIM ĐÃ XEM'}</div>
-                        <div class="booking-time" style="font-size: 12px; color: #aaa; margin-top: 4px;">
+                <div class="history-info">
+                    <div class="history-detail-trigger">
+                        <div class="movie-name">${inv.TenPhim || 'PHIM ĐÃ XEM'}</div>
+                        <div class="booking-time">
                             ${date.toLocaleDateString('vi-VN')} | ${date.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })} | ${inv.PhuongThuc || ''}
                         </div>
                     </div>
-                    <div class="history-amount" style="font-size: 19px; font-weight: 900; color: #fff;">${formatVND(inv.TongTien)}</div>
+                    <div class="history-amount">${formatVND(inv.TongTien)}</div>
                     <button type="button" class="btn-view-ticket" title="Xem mã QR vé">
                         <i class="fa-solid fa-qrcode"></i> XEM VÉ
                     </button>

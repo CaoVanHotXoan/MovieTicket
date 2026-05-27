@@ -1,4 +1,5 @@
 /* Payment.css - Giao diện thanh toán cao cấp */
+/* Mobile-First Approach */
 
 /* Overlay của modal */
 .payment-overlay {
@@ -25,43 +26,50 @@
 .payment-container {
     background-color: #000;
     color: #fff;
-    width: 900px;
-    max-width: 95%;
-    height: 550px;
+    width: 95%; /* Mobile base */
+    height: auto;
+    max-height: 90vh;
+    overflow-y: auto;
     display: flex;
+    flex-direction: column; /* Mobile base */
     border: 1px solid #333;
-    overflow: hidden;
     position: relative;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 1);
+    box-shadow: 0 1.5625rem 3.125rem -0.75rem rgba(0, 0, 0, 1);
+    border-radius: 0.5rem;
 }
+
+/* Custom scrollbar for mobile container if needed */
+.payment-container::-webkit-scrollbar { width: 0.25rem; }
+.payment-container::-webkit-scrollbar-thumb { background: #333; }
 
 /* Phần bên trái: Thông tin đơn hàng */
 .payment-left {
     flex: 1.2;
-    padding: 40px;
-    border-right: 1px solid #222;
+    padding: 1.25rem; /* 20px */
+    border-bottom: 1px solid #222; /* Separator for mobile */
     background: linear-gradient(135deg, #111 0%, #000 100%);
     display: flex;
     flex-direction: column;
 }
 
 .movie-header {
-    margin-bottom: 30px;
+    margin-bottom: 1.25rem; /* 20px */
 }
 
 .payment-age-tag {
     background-color: #fff;
     color: #000;
-    padding: 2px 8px;
-    font-size: 14px;
+    padding: 0.125rem 0.5rem; /* 2px 8px */
+    font-size: 0.875rem; /* 14px */
     font-weight: 900;
-    margin-right: 10px;
+    margin-right: 0.625rem; /* 10px */
     display: inline-block;
+    border-radius: 0.25rem;
 }
 
 .payment-movie-name {
     display: inline;
-    font-size: 24px;
+    font-size: 1.25rem; /* 20px */
     font-weight: 700;
     text-transform: uppercase;
 }
@@ -71,46 +79,46 @@
 }
 
 .detail-item {
-    margin-bottom: 15px;
+    margin-bottom: 0.9375rem; /* 15px */
 }
 
 .detail-item label {
     display: block;
     color: #888;
-    font-size: 13px;
-    margin-bottom: 4px;
+    font-size: 0.8125rem; /* 13px */
+    margin-bottom: 0.25rem; /* 4px */
 }
 
 .invoice-combos-subline {
     display: block;
-    margin-top: 8px;
-    font-size: 14px;
+    margin-top: 0.5rem; /* 8px */
+    font-size: 0.875rem; /* 14px */
     color: #ccc;
     line-height: 1.5;
 }
 
 .invoice-combos-subline .invoice-combos-label {
     color: #888;
-    margin-right: 6px;
+    margin-right: 0.375rem; /* 6px */
 }
 
 .detail-item span {
-    font-size: 16px;
+    font-size: 1rem; /* 16px */
     font-weight: 500;
 }
 
 .total-amount-section {
     border-top: 1px solid #333;
-    padding-top: 20px;
+    padding-top: 1.25rem; /* 20px */
 }
 
 .total-label {
     color: #888;
-    font-size: 14px;
+    font-size: 0.875rem; /* 14px */
 }
 
 .total-value {
-    font-size: 32px;
+    font-size: 1.5rem; /* 24px */
     font-weight: 800;
     color: #fff;
 }
@@ -118,7 +126,7 @@
 /* Phần bên phải: Lựa chọn ngân hàng và thanh toán */
 .payment-right {
     flex: 1;
-    padding: 40px;
+    padding: 1.25rem; /* 20px */
     display: flex;
     flex-direction: column;
     background-color: #000;
@@ -126,12 +134,13 @@
 
 .close-payment {
     position: absolute;
-    top: 20px;
-    right: 20px;
-    font-size: 24px;
+    top: 0.625rem; /* 10px */
+    right: 0.9375rem; /* 15px */
+    font-size: 1.5rem; /* 24px */
     cursor: pointer;
     color: #888;
     transition: 0.3s;
+    z-index: 10;
 }
 
 .close-payment:hover {
@@ -140,36 +149,31 @@
 }
 
 .payment-title {
-    font-size: 18px;
+    font-size: 1.125rem; /* 18px */
     font-weight: 600;
-    margin-bottom: 25px;
+    margin-bottom: 1.25rem; /* 20px */
     text-align: center;
 }
 
 /* Grid logo ngân hàng */
 .bank-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 15px;
-    margin-bottom: 30px;
-    max-height: 250px;
+    grid-template-columns: 1fr; /* Mobile base: 1 column */
+    gap: 0.9375rem; /* 15px */
+    margin-bottom: 1.25rem; /* 20px */
+    max-height: 12.5rem; /* 200px */
     overflow-y: auto;
-    padding-right: 5px;
+    padding-right: 0.3125rem; /* 5px */
 }
 
 /* Custom scrollbar cho bank grid */
-.bank-grid::-webkit-scrollbar {
-    width: 4px;
-}
-
-.bank-grid::-webkit-scrollbar-thumb {
-    background: #333;
-}
+.bank-grid::-webkit-scrollbar { width: 0.25rem; /* 4px */ }
+.bank-grid::-webkit-scrollbar-thumb { background: #333; }
 
 .bank-item {
     border: 1px solid #222;
-    padding: 12px;
-    border-radius: 4px;
+    padding: 0.75rem; /* 12px */
+    border-radius: 0.25rem; /* 4px */
     display: flex;
     align-items: center;
     cursor: pointer;
@@ -178,15 +182,16 @@
 }
 
 .bank-item img {
-    width: 30px;
-    height: 30px;
+    width: 1.875rem; /* 30px */
+    height: 1.875rem; /* 30px */
     object-fit: contain;
-    margin-right: 12px;
-    filter: grayscale(1) invert(1); /* Chuyển về trắng đen cho tone-sur-tone */
+    margin-right: 0.75rem; /* 12px */
+    filter: grayscale(1) invert(1);
+    max-width: 100%;
 }
 
 .bank-item span {
-    font-size: 12px;
+    font-size: 0.75rem; /* 12px */
     font-weight: 500;
     color: #ccc;
 }
@@ -194,7 +199,7 @@
 .bank-item:hover {
     background-color: #111;
     border-color: #555;
-    transform: translateY(-2px);
+    transform: translateY(-0.125rem);
 }
 
 .bank-item.selected {
@@ -202,31 +207,27 @@
     background-color: #1a1a1a;
 }
 
-.bank-item.selected span {
-    color: #fff;
-}
-
-.bank-item.selected img {
-    filter: none; /* Hiện màu logo gốc khi chọn nếu muốn, hoặc giữ nguyên */
-}
+.bank-item.selected span { color: #fff; }
+.bank-item.selected img { filter: none; }
 
 /* Nút thanh toán */
 .pay-now-btn {
     width: 100%;
-    padding: 16px;
+    padding: 1rem; /* 16px */
     background-color: #fff;
     color: #000;
     border: none;
     font-weight: 800;
-    font-size: 16px;
+    font-size: 1rem; /* 16px */
     cursor: pointer;
     transition: 0.3s;
-    margin-top: auto;
+    margin-top: 1.25rem; /* 20px */
+    border-radius: 0.25rem;
 }
 
 .pay-now-btn:hover {
     background-color: #ddd;
-    letter-spacing: 1px;
+    letter-spacing: 0.0625rem; /* 1px */
 }
 
 .pay-now-btn:disabled {
@@ -235,16 +236,152 @@
     cursor: not-allowed;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-    .payment-container {
-        flex-direction: column;
-        height: auto;
-        max-height: 90vh;
+/* ========================================================
+   MOBILE: modal full width
+======================================================== */
+@media screen and (max-width: 767px) {
+    .payment-overlay {
+        align-items: flex-end;
+        padding: 0;
     }
-    .payment-left {
+
+    .payment-container {
+        width: 100%;
+        max-width: 100%;
+        max-height: 92dvh;
+        border-radius: 0.75rem 0.75rem 0 0;
+        border-left: none;
         border-right: none;
-        border-bottom: 1px solid #222;
-        padding: 30px;
+        border-bottom: none;
+    }
+
+    .payment-left,
+    .payment-right {
+        padding: 1rem;
+    }
+
+    .payment-movie-name {
+        display: block;
+        font-size: 0.85rem;
+        line-height: 1.35;
+        margin-top: 0.35rem;
+    }
+
+    .payment-age-tag {
+        font-size: 0.75rem;
+    }
+
+    .detail-item span {
+        font-size: 0.875rem;
+        word-break: break-word;
+    }
+
+    .total-value {
+        font-size: 1.25rem;
+    }
+
+    .payment-title {
+        font-size: 1rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .bank-grid {
+        max-height: none;
+        grid-template-columns: 1fr;
+    }
+
+    .bank-item {
+        padding: 0.875rem;
+    }
+
+    .bank-item span {
+        font-size: 0.875rem;
+    }
+
+    .pay-now-btn {
+        margin-top: 0.75rem;
+        padding: 0.875rem;
+        background-color: #fff;
+        color: #000;
+    }
+
+    .pay-now-btn:disabled {
+        background-color: #555;
+        color: #ccc;
+    }
+
+    .close-payment {
+        top: 0.5rem;
+        right: 0.75rem;
+    }
+}
+
+/* ========================================================
+   TABLET BREAKPOINT (768px - 1024px)
+======================================================== */
+@media screen and (min-width: 768px) {
+    .payment-container {
+        width: 80%;
+    }
+    
+    .bank-grid {
+        grid-template-columns: repeat(2, 1fr); /* 2 columns on tablet */
+    }
+    
+    .payment-left {
+        padding: 1.875rem; /* 30px */
+    }
+    
+    .payment-right {
+        padding: 1.875rem; /* 30px */
+    }
+}
+
+/* ========================================================
+   DESKTOP BREAKPOINT (> 1024px)
+======================================================== */
+@media screen and (min-width: 1025px) {
+    .payment-container {
+        flex-direction: row;
+        width: 56.25rem; /* 900px */
+        height: 34.375rem; /* 550px */
+        max-height: none;
+        overflow: hidden;
+    }
+    
+    .payment-left {
+        border-right: 1px solid #222;
+        border-bottom: none;
+        padding: 2.5rem; /* 40px */
+    }
+    
+    .payment-right {
+        padding: 2.5rem; /* 40px */
+    }
+    
+    .close-payment {
+        top: 1.25rem; /* 20px */
+        right: 1.25rem; /* 20px */
+    }
+    
+    .movie-header {
+        margin-bottom: 1.875rem; /* 30px */
+    }
+    
+    .payment-movie-name {
+        font-size: 1.5rem; /* 24px */
+    }
+    
+    .total-value {
+        font-size: 2rem; /* 32px */
+    }
+    
+    .bank-grid {
+        margin-bottom: 1.875rem; /* 30px */
+        max-height: 15.625rem; /* 250px */
+    }
+    
+    .pay-now-btn {
+        margin-top: auto; /* Push to bottom on desktop */
     }
 }
