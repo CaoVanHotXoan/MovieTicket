@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Lý Rạp Phim - Admin</title>
+  <script type="module" crossorigin src="/MovieTicket/assets/admin-tjiqJy8o.js"></script>
+  <link rel="modulepreload" crossorigin href="/MovieTicket/assets/modulepreload-polyfill-B5Qt9EMX.js">
+  <link rel="stylesheet" crossorigin href="/MovieTicket/assets/admin-D8aaCM_K.css">
+</head>
+
+<body class="bg-slate-50 text-slate-900 min-h-screen">
+
+    <!-- Mobile Top Header Bar -->
+    <header
+        class="md:hidden bg-slate-900 text-white flex justify-between items-center h-16 px-4 sticky top-0 z-40 shadow-md">
+        <button id="mobile-menu-open" class="p-2 text-gray-300 hover:text-white focus:outline-none cursor-pointer">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+        </button>
+        <div class="flex items-center gap-2 font-black text-lg text-amber-500 tracking-tight">
+            <i data-lucide="clapperboard" class="w-5 h-5"></i>
+            <span>CINEMA MANAGER</span>
+        </div>
+        <a href="index.html"
+            class="flex items-center gap-1.5 px-2 py-1.5 text-slate-300 hover:text-amber-400 text-xs font-bold uppercase tracking-wide transition-colors"
+            title="Quay lại trang chủ">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            <span class="hidden sm:inline">Trang chủ</span>
+        </a>
+    </header>
+
+    <!-- Sidebar Backdrop for Mobile -->
+    <div id="sidebar-backdrop"
+        class="fixed inset-0 bg-slate-950/50 opacity-0 pointer-events-none transition-opacity duration-300 z-40 md:hidden">
+    </div>
+
+    <!-- Left-aligned Navigation Sidebar -->
+    <aside id="admin-sidebar"
+        class="fixed top-0 left-0 h-screen w-72 bg-slate-950 text-white border-r border-slate-800 z-50 md:z-30 transform -translate-x-full md:translate-x-0 transition-transform duration-300 flex flex-col shadow-2xl">
+        <!-- Logo Header (Desktop only) -->
+        <div
+            class="hidden md:flex items-center gap-2.5 px-6 py-6 border-b border-slate-900 font-black text-xl text-amber-500 tracking-tight select-none">
+            <i data-lucide="clapperboard" class="w-6 h-6"></i>
+            <span>CINEMA MANAGER</span>
+        </div>
+
+        <!-- Mobile Sidebar Header with Close Button -->
+        <div class="flex md:hidden items-center justify-between px-5 py-5 border-b border-slate-900">
+            <span class="font-extrabold text-sm text-slate-400 uppercase tracking-widest">Menu Điều Hướng</span>
+            <button id="mobile-menu-close"
+                class="p-1.5 text-slate-400 hover:text-white bg-slate-900 hover:bg-slate-800 rounded-lg cursor-pointer">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+
+        <!-- Navigation Links Container -->
+        <nav class="flex-grow overflow-y-auto px-4 py-6 space-y-2.5 scrollbar-none">
+            <a href="index.html"
+                class="w-full flex items-center gap-3.5 px-4 py-3 mb-3 text-left transition-all text-slate-300 hover:text-white bg-slate-900/60 hover:bg-slate-900 border border-slate-800 hover:border-amber-500/40 rounded-xl font-bold text-sm group">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                    class="w-4 h-4 text-slate-500 group-hover:text-amber-500 transition-colors" fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                </svg>
+                <span>Quay lại trang chủ</span>
+            </a>
+
+            <div class="text-[10px] font-black text-slate-500 px-3 uppercase tracking-widest mb-2 select-none">Quản trị
+                viên</div>
+
+            <button data-page="dashboard"
+                class="nav-link active bg-gray-800 border-amber-500 w-full flex items-center gap-3.5 px-4 py-3 text-left transition-all text-slate-400 hover:text-white hover:bg-slate-900 border-l-4 border-transparent rounded-xl font-bold text-sm cursor-pointer">
+                <i data-lucide="layout-dashboard" class="w-4 h-4"></i> <span>Dashboard & Thống kê</span>
+            </button>
+
+            <button data-page="banners"
+                class="nav-link w-full flex items-center gap-3.5 px-4 py-3 text-left transition-all text-slate-400 hover:text-white hover:bg-slate-900 border-l-4 border-transparent rounded-xl font-bold text-sm cursor-pointer">
+                <i data-lucide="image" class="w-4 h-4"></i> <span>Quản Lý Banners</span>
+            </button>
+
+            <button data-page="movie-types"
+                class="nav-link w-full flex items-center gap-3.5 px-4 py-3 text-left transition-all text-slate-400 hover:text-white hover:bg-slate-900 border-l-4 border-transparent rounded-xl font-bold text-sm cursor-pointer">
+                <i data-lucide="tag" class="w-4 h-4"></i> <span>Loại Phim</span>
+            </button>
+
+            <button data-page="movies"
+                class="nav-link w-full flex items-center gap-3.5 px-4 py-3 text-left transition-all text-slate-400 hover:text-white hover:bg-slate-900 border-l-4 border-transparent rounded-xl font-bold text-sm cursor-pointer">
+                <i data-lucide="film" class="w-4 h-4"></i> <span>Phim Chiếu</span>
+            </button>
+
+            <button data-page="rooms"
+                class="nav-link w-full flex items-center gap-3.5 px-4 py-3 text-left transition-all text-slate-400 hover:text-white hover:bg-slate-900 border-l-4 border-transparent rounded-xl font-bold text-sm cursor-pointer">
+                <i data-lucide="monitor" class="w-4 h-4"></i> <span>Phòng Chiếu</span>
+            </button>
+
+            <button data-page="seat-types"
+                class="nav-link w-full flex items-center gap-3.5 px-4 py-3 text-left transition-all text-slate-400 hover:text-white hover:bg-slate-900 border-l-4 border-transparent rounded-xl font-bold text-sm cursor-pointer">
+                <i data-lucide="sofa" class="w-4 h-4"></i> <span>Loại Ghế</span>
+            </button>
+
+            <button data-page="seats"
+                class="nav-link w-full flex items-center gap-3.5 px-4 py-3 text-left transition-all text-slate-400 hover:text-white hover:bg-slate-900 border-l-4 border-transparent rounded-xl font-bold text-sm cursor-pointer">
+                <i data-lucide="armchair" class="w-4 h-4"></i> <span>Quản Lý Ghế</span>
+            </button>
+
+            <button data-page="showtimes"
+                class="nav-link w-full flex items-center gap-3.5 px-4 py-3 text-left transition-all text-slate-400 hover:text-white hover:bg-slate-900 border-l-4 border-transparent rounded-xl font-bold text-sm cursor-pointer">
+                <i data-lucide="calendar" class="w-4 h-4"></i> <span>Suất Chiếu</span>
+            </button>
+
+            <button data-page="customers"
+                class="nav-link w-full flex items-center gap-3.5 px-4 py-3 text-left transition-all text-slate-400 hover:text-white hover:bg-slate-900 border-l-4 border-transparent rounded-xl font-bold text-sm cursor-pointer">
+                <i data-lucide="users" class="w-4 h-4"></i> <span>Khách Hàng</span>
+            </button>
+
+            <button data-page="invoices"
+                class="nav-link w-full flex items-center gap-3.5 px-4 py-3 text-left transition-all text-slate-400 hover:text-white hover:bg-slate-900 border-l-4 border-transparent rounded-xl font-bold text-sm cursor-pointer">
+                <i data-lucide="receipt" class="w-4 h-4"></i> <span>Hóa Đơn</span>
+            </button>
+
+            <button data-page="payments"
+                class="nav-link w-full flex items-center gap-3.5 px-4 py-3 text-left transition-all text-slate-400 hover:text-white hover:bg-slate-900 border-l-4 border-transparent rounded-xl font-bold text-sm cursor-pointer">
+                <i data-lucide="credit-card" class="w-4 h-4"></i> <span>Thanh Toán</span>
+            </button>
+
+            <button data-page="products"
+                class="nav-link w-full flex items-center gap-3.5 px-4 py-3 text-left transition-all text-slate-400 hover:text-white hover:bg-slate-900 border-l-4 border-transparent rounded-xl font-bold text-sm cursor-pointer">
+                <i data-lucide="shopping-bag" class="w-4 h-4"></i> <span>SP và Loại SP</span>
+            </button>
+        </nav>
+
+        <!-- Sidebar Footer Admin Name (Desktop) - Raised to prevent overlaps with sticky logout button -->
+        <div class="hidden md:flex items-center gap-3 px-6 py-5 border-t border-slate-900 bg-slate-950/50 mb-20">
+            <div
+                class="w-8 h-8 rounded-full bg-amber-500/10 text-amber-500 flex items-center justify-center font-extrabold text-sm border border-amber-500/20">
+                A
+            </div>
+            <div>
+                <div class="text-xs font-bold text-slate-200">Quản trị viên</div>
+                <div class="text-[10px] text-slate-500 font-semibold uppercase">Đang hoạt động</div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Floating Exit Button (Sticky Bottom-Left) -->
+    <button id="logout-btn"
+        class="fixed bottom-4 left-3 sm:bottom-6 sm:left-6 z-50 flex items-center gap-2 px-3 py-2.5 sm:px-5 sm:py-3.5 rounded-2xl bg-gradient-to-r from-rose-600 to-red-600 text-white font-extrabold text-[10px] sm:text-xs shadow-xl shadow-red-950/20 border border-red-500/10 hover:from-rose-500 hover:to-red-500 hover:scale-105 active:scale-95 hover:shadow-red-500/30 transition-all duration-300 group cursor-pointer uppercase tracking-wider max-w-[calc(100vw-1.5rem)]">
+        <i data-lucide="log-out" class="w-4 h-4 shrink-0 transition-transform group-hover:-translate-x-0.5"></i>
+        <span class="truncate">Thoát Hệ Thống</span>
+    </button>
+
+    <!-- Toast thông báo (tiêu chí 2) -->
+    <div id="admin-toast-root" class="fixed top-4 right-4 z-[70] flex flex-col gap-2 max-w-sm" aria-live="polite"></div>
+
+    <!-- Main Content Panel (Shifted right to accommodate fixed left sidebar on desktop) -->
+    <div class="md:pl-72 min-h-screen flex flex-col">
+        <main id="app" class="flex-grow max-w-7xl w-full mx-auto p-3 sm:p-4 md:p-8 pb-24 md:pb-8 overflow-x-hidden">
+            <div class="flex justify-center items-center h-64">
+                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-600"></div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modals Holder -->
+    <div id="modal-container" class="fixed inset-0 z-[60] flex items-center justify-center pointer-events-none">
+        <div id="modal-backdrop"
+            class="absolute inset-0 bg-black/50 opacity-0 transition-opacity duration-300 pointer-events-none"></div>
+        <div id="modal-content"
+            class="bg-white rounded-xl shadow-2xl w-[min(100%,42rem)] max-w-[95vw] mx-3 sm:mx-4 max-h-[90dvh] overflow-y-auto transform scale-90 opacity-0 transition-all duration-300 pointer-events-auto">
+            <!-- Modal content injected here -->
+        </div>
+    </div>
+
+    <script src="api.js"></script>
+
+    <!-- Tiny inline script for mobile sidebar drawer toggling -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const sidebar = document.getElementById('admin-sidebar');
+            const openBtn = document.getElementById('mobile-menu-open');
+            const closeBtn = document.getElementById('mobile-menu-close');
+            const backdrop = document.getElementById('sidebar-backdrop');
+
+            if (openBtn && sidebar && backdrop) {
+                openBtn.addEventListener('click', () => {
+                    sidebar.classList.remove('-translate-x-full');
+                    sidebar.classList.add('translate-x-0');
+                    backdrop.classList.remove('opacity-0', 'pointer-events-none');
+                });
+            }
+
+            const closeSidebar = () => {
+                if (sidebar) {
+                    sidebar.classList.remove('translate-x-0');
+                    sidebar.classList.add('-translate-x-full');
+                }
+                if (backdrop) {
+                    backdrop.classList.add('opacity-0', 'pointer-events-none');
+                }
+            };
+
+            if (closeBtn) closeBtn.addEventListener('click', closeSidebar);
+            if (backdrop) backdrop.addEventListener('click', closeSidebar);
+
+            // Close sidebar when clicking any navigation link on mobile screens
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', () => {
+                    if (window.innerWidth < 768) {
+                        closeSidebar();
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>
