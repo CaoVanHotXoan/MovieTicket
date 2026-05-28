@@ -180,6 +180,43 @@ body {
     font-weight: bold;
 }
 
+/* ===== TRẠNG THÁI GHẾ NGƯỜI DÙNG KHÁC ĐANG CHỌN ===== */
+/* Khi người dùng khác trên tab khác đang chọn ghế này */
+.seat.other-user-selecting {
+    background: rgba(255, 152, 0, 0.4) !important;
+    border-color: #ff9800 !important;
+    color: #fff !important;
+    cursor: not-allowed;
+    animation: pulse-warning 1.5s ease-in-out infinite;
+    position: relative;
+}
+
+/* Animation nhấp nháy cảnh báo cho ghế đang bị người khác giữ */
+@keyframes pulse-warning {
+    0%, 100% { 
+        box-shadow: 0 0 0 0 rgba(255, 152, 0, 0.7);
+    }
+    50% { 
+        box-shadow: 0 0 0 4px rgba(255, 152, 0, 0.3);
+    }
+}
+
+/* Dấu hiệu trên ghế đang bị người khác chọn */
+.seat.other-user-selecting::before {
+    content: "👤";
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    font-size: 12px;
+    background: #ff9800;
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 /* Ghế VIP */
 .seat.vip {
     border: 2px solid #ff9800;
@@ -283,6 +320,7 @@ body {
 }
 
 .seat-box.selected { background: #fff; border-color: #fff; }
+.seat-box.other-user-selecting { background: rgba(255, 152, 0, 0.4); border-color: #ff9800; }
 .seat-box.regular { border: 1px solid #777; }
 .seat-box.vip { border: 2px solid #ff9800; background: rgba(255, 152, 0, 0.05); }
 .seat-box.sweetbox { width: 2.5rem; /* 40px */ border: 1.5px solid #e91e63; border-radius: 0.375rem; background: rgba(233, 30, 99, 0.05); }
