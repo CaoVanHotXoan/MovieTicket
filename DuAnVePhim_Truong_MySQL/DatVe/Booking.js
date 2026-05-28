@@ -191,10 +191,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (selectedSeats.length === 0) { alert('Vui lòng chọn ít nhất một chỗ ngồi!'); return; }
         
         // KIỂM TRA ĐĂNG NHẬP
-        const currentUser = localStorage.getItem('currentUser');
+        const currentUser = sessionStorage.getItem('currentUser');
         if (!currentUser) {
             alert('Bạn cần đăng nhập để tiếp tục thanh toán!');
-            localStorage.setItem('returnUrl', window.location.href);
+            sessionStorage.setItem('returnUrl', window.location.href);
             window.location.href = '../Login/Login.html';
             return;
         }

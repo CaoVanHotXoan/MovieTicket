@@ -1,12 +1,12 @@
 /**
  * FILE: MovieComment.js — PHẦN 1: Bình luận phim từ SQL Server (bảng BinhLuan)
  * - Tải bình luận thật qua API /api/binhluan/:maPhim
- * - Chỉ cho phép gửi bình luận khi người dùng đã đăng nhập (currentUser trong localStorage)
+ * - Chỉ cho phép gử bình luận khi người dùng đã đăng nhập (currentUser trong sessionStorage)
  */
 
 document.addEventListener('DOMContentLoaded', () => {
     const movieId = parseInt(localStorage.getItem('selectedMovieId'), 10);
-    const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+    const currentUser = JSON.parse(sessionStorage.getItem('currentUser') || 'null');
 
     const commentsList = document.getElementById('commentsList');
     const newCommentText = document.getElementById('newCommentText');

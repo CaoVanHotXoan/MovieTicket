@@ -461,32 +461,44 @@
 
 /* RESPONSIVE */
 @media (max-width: 768px) {
+    .comments-section {
+        padding-left: var(--page-gutter, 0.75rem);
+        padding-right: var(--page-gutter, 0.75rem);
+    }
+
     .comment-input-box {
-        padding: 15px;
+        padding: 0.9375rem;
     }
     
     .user-info-bar {
         flex-direction: column;
         align-items: flex-start;
-        gap: 10px;
+        gap: 0.625rem;
     }
     
     .guest-name-input-group {
         width: 100%;
         justify-content: space-between;
+        flex-wrap: wrap;
     }
     
     .guest-name-input-group input {
         flex: 1;
-        max-width: 200px;
+        min-width: 0;
+        max-width: 100%;
     }
     
     .replies-container {
-        margin-left: 20px;
-        padding-left: 10px;
+        margin-left: 1rem;
+        padding-left: 0.625rem;
     }
     
     .reply-form {
-        margin-left: 20px;
+        margin-left: 1rem;
+    }
+
+    .comment-actions {
+        flex-wrap: wrap;
+        gap: 0.5rem;
     }
 }

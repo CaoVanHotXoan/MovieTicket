@@ -28,11 +28,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
 /**
  * HÀM 1: KIỂM TRA ĐĂNG NHẬP
- * Kiểm tra sự tồn tại của currentUser trong localStorage.
+ * Kiểm tra sự tồn tại của currentUser trong sessionStorage.
  * Nếu không có người dùng đăng nhập thì tự động chuyển hướng ra trang đăng nhập.
  */
 function checkLoginState() {
-    const user = JSON.parse(localStorage.getItem('currentUser'));
+    const user = JSON.parse(sessionStorage.getItem('currentUser'));
     if (!user) {
         alert('Vui lòng đăng nhập để truy cập trang thông tin cá nhân!');
         window.location.href = '../Login/Login.html';
@@ -327,7 +327,7 @@ function setupProfileUpdate(user) {
                         ...user,
                         MatKhau: newPassword
                     };
-                    localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+                    sessionStorage.setItem('currentUser', JSON.stringify(updatedUser));
                     
                     alert('Đổi mật khẩu thành công!');
                     
@@ -413,7 +413,7 @@ function setupAvatarEditor(user) {
                     throw new Error(err.error || 'Lưu ảnh thất bại');
                 }
                 user.HinhAnh = newUrl;
-                localStorage.setItem('currentUser', JSON.stringify(user));
+                sessionStorage.setItem('currentUser', JSON.stringify(user));
                 applyAvatarToUI(user);
                 panel.style.display = 'none';
                 alert('Đã cập nhật ảnh đại diện!');

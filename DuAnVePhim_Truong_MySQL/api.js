@@ -29,12 +29,12 @@ function handleLogin() {
 
             if (result.success) {
                 const user = result.user;
-                localStorage.setItem('currentUser', JSON.stringify(user));
+                sessionStorage.setItem('currentUser', JSON.stringify(user));
                 alert(`Đăng nhập thành công! Chào mừng ${user.Ten}`);
 
-                const returnUrl = localStorage.getItem('returnUrl');
+                const returnUrl = sessionStorage.getItem('returnUrl');
                 if (returnUrl) {
-                    localStorage.removeItem('returnUrl');
+                    sessionStorage.removeItem('returnUrl');
                     window.location.href = returnUrl;
                 } else if (user.roleName.toLowerCase() === 'admin') {
                     window.location.href = '../admin.html';
@@ -122,12 +122,12 @@ function handleLogout() {
     const logoutBtn = document.getElementById('logout-btn');
     if (logoutBtn) {
         logoutBtn.addEventListener('click', (e) => {
-            const currentUser = localStorage.getItem('currentUser');
+            const currentUser = sessionStorage.getItem('currentUser');
             // Nếu đang có người dùng đăng nhập thì mới xử lý đăng xuất
             if (currentUser) {
                 e.preventDefault();
                 if (confirm('Bạn có chắc chắn muốn thoát khỏi tài khoản này không?')) {
-                    localStorage.removeItem('currentUser');
+                    sessionStorage.removeItem('currentUser');
                     alert('Đã thoát tài khoản!');
 
                     // Chú thích: Fix lỗi chuyển hướng sai đường dẫn khi ở trong các thư mục con
@@ -151,7 +151,7 @@ function handleLogout() {
 
 // 3.1 CẬP NHẬT GIAO DIỆN KHI ĐÃ ĐĂNG NHẬP
 function updateAuthUI() {
-    const user = JSON.parse(localStorage.getItem('currentUser'));
+    const user = JSON.parse(sessionStorage.getItem('currentUser'));
     const loginIcon = document.querySelector('.login-icon');
 
     // Xóa nút admin cũ nếu tồn tại để tránh tạo trùng lặp khi hàm này chạy lại nhiều lần
@@ -413,12 +413,35 @@ async function loadBookingPage() {
     const showtime = JSON.parse(localStorage.getItem('selectedShowtime'));
     if (!showtime) return;
 
+    // ============================================================
+    // ✨ TÍNH NĂNG ĐỒNG BỘ THỜI GIAN THỰC: GHẾ CỦA NGƯỜI DÙNG KHÁC
+    // ============================================================
+    // Lấy thông tin người dùng hiện tại từ sessionStorage
+    const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+    
+    // Tạo BroadcastChannel riêng cho mỗi suất chiếu (MaSuat)
+    // Ví dụ: "seat-selection-123" nếu MaSuat = 123
+    // Các tab cùng suất chiếu sẽ kết nối vào channel này
+    const channelName = `seat-selection-${showtime.MaSuat}`;
+    let broadcastChannel = null;
+    
+    // Khởi tạo BroadcastChannel nếu trình duyệt hỗ trợ
+    if (typeof BroadcastChannel !== 'undefined') {
+        broadcastChannel = new BroadcastChannel(channelName);
+    }
+    
+    // Lưu trữ ghế đang bị người dùng khác giữ
+    // Cấu trúc: { "A1": { userName: "Nguyễn Văn A", MaKH: 5 }, "B2": {...} }
+    const otherUsersSeats = {};
+
     const backBtn = document.getElementById('backBtn');
     if (backBtn) {
         backBtn.addEventListener('click', () => {
             if (showtime.MaPhim) {
                 localStorage.setItem('selectedMovieId', showtime.MaPhim);
             }
+            // Đóng BroadcastChannel khi rời trang
+            if (broadcastChannel) broadcastChannel.close();
             window.location.href = '../ChiTietPhim/MovieDetail.html';
         });
     }
@@ -446,7 +469,8 @@ async function loadBookingPage() {
             // 1. Thêm chú thích trạng thái cơ bản (Đã đặt, Đang chọn)
             const basicLegends = [
                 { className: 'booked', label: 'Ghế đã đặt' },
-                { className: 'selected', label: 'Ghế bạn chọn' }
+                { className: 'selected', label: 'Ghế bạn chọn' },
+                { className: 'other-user-selecting', label: 'Ghế người khác đang chọn' }
             ];
 
             basicLegends.forEach(item => {
@@ -513,17 +537,43 @@ async function loadBookingPage() {
 
                 const isBooked = bookedSeatIds.includes(seat.MaGhe);
                 seatEl.className = `seat ${typeClass} ${isBooked ? 'booked' : ''}`;
+                // 🔖 Thêm data-seat-id để dễ tìm kiếm ghế chính xác khi cần cập nhật từ tab khác
+                // Ví dụ: data-seat-id="A1" giúp querySelector tìm nhanh mà không nhầm lẫn
+                seatEl.setAttribute('data-seat-id', seat.SoGhe);
                 seatEl.innerText = seat.SoGhe.substring(1);
 
                 if (!isBooked) {
                     seatEl.addEventListener('click', () => {
                         const seatData = { ...seat, GiaGhe: Number(seat.GiaGhe) || 0 };
+                        const seatNumber = seat.SoGhe; // Ví dụ: "A1", "B2"
+                        
                         if (seatEl.classList.contains('selected')) {
+                            // Người dùng BỎ CHỌN ghế
                             seatEl.classList.remove('selected');
                             selectedSeats = selectedSeats.filter(s => s.MaGhe !== seat.MaGhe);
+                            
+                            // ✨ GỬI TÍN HIỆU GIẢI PHÓNG GHẾ: Thông báo cho các tab khác biết ghế này đã được bỏ chọn
+                            if (broadcastChannel && currentUser) {
+                                broadcastChannel.postMessage({
+                                    type: 'SEAT_DESELECTED', // Loại sự kiện: Ghế được bỏ chọn
+                                    seatNumber: seatNumber,  // Số ghế (VD: "A1")
+                                    MaKH: currentUser.MaKH   // ID khách hàng
+                                });
+                            }
                         } else {
+                            // Người dùng CHỌN ghế
                             seatEl.classList.add('selected');
                             selectedSeats.push(seatData);
+                            
+                            // ✨ GỬI TÍN HIỆU CHIẾM GHẾ: Thông báo cho các tab khác biết ghế này đang được chọn
+                            if (broadcastChannel && currentUser) {
+                                broadcastChannel.postMessage({
+                                    type: 'SEAT_SELECTED',    // Loại sự kiện: Ghế được chọn
+                                    seatNumber: seatNumber,   // Số ghế (VD: "A1")
+                                    userName: currentUser.Ten, // Tên người dùng
+                                    MaKH: currentUser.MaKH    // ID khách hàng
+                                });
+                            }
                         }
                         const totalPrice = recalcTotal();
                         document.getElementById('fSeats').innerText = selectedSeats.map(s => s.SoGhe).join(', ') || '-';
@@ -534,17 +584,94 @@ async function loadBookingPage() {
             });
         });
 
+        // ============================================================
+        // ✨ LẮP NGHE TÍN HIỆU TỬ CÁC TAB KHÁC (BroadcastChannel Listener)
+        // ============================================================
+        // Khi nhận message từ channel, cập nhật giao diện để hiển thị ghế của người khác
+        if (broadcastChannel) {
+            broadcastChannel.onmessage = (event) => {
+                const message = event.data;
+                
+                // Lọc loại sự kiện từ message
+                if (message.type === 'SEAT_SELECTED') {
+                    // 📍 CÓ NGƯỜI DÙNG KHÁC CHỌN GHẾ
+                    // - message.seatNumber: Số ghế (VD: "A1")
+                    // - message.userName: Tên người dùng
+                    // - message.MaKH: ID khách hàng
+                    
+                    const seatNumber = message.seatNumber; // VD: "A1"
+                    const userName = message.userName || 'Người dùng khác';
+                    
+                    // 🔍 TÌM KIẾM GHẾ CHÍNH XÁC
+                    // Dùng data-seat-id attribute để tìm ghế đúng vị trí
+                    // querySelector(`[data-seat-id="A1"]`) sẽ tìm ghế A1 một cách chính xác
+                    const targetSeat = seatGrid.querySelector(`[data-seat-id="${seatNumber}"]`);
+                    
+                    if (targetSeat && !targetSeat.classList.contains('selected')) {
+                        // ✅ TÌM THẤY GHẾ VÀ NÓ CHƯA BỊ BẠN CHỌN
+                        // Thêm class để hiển thị ghế này đang bị người khác giữ (màu cam nhấp nháy)
+                        targetSeat.classList.add('other-user-selecting');
+                        
+                        // 📝 LƯU THÔNG TIN: Ai đang giữ ghế này
+                        // Lưu vào otherUsersSeats để có thể kiểm tra sau này nếu cần
+                        otherUsersSeats[seatNumber] = { 
+                            userName: userName, 
+                            MaKH: message.MaKH 
+                        };
+                        
+                        // 🖨️ LOG THÔNG TIN (tuỳ chọn, để debug)
+                        console.log(`ℹ️ ${userName} đang chọn ghế ${seatNumber}`);
+                    }
+                    
+                } else if (message.type === 'SEAT_DESELECTED') {
+                    // 🔄 NGƯỜI DÙNG KHÁC BỎ CHỌN GHẾ
+                    // - message.seatNumber: Số ghế được bỏ chọn (VD: "A1")
+                    
+                    const seatNumber = message.seatNumber; // VD: "A1"
+                    
+                    // 🔍 TÌM KIẾM GHẾ CHÍNH XÁC - dùng data-seat-id để tìm nhanh
+                    const targetSeat = seatGrid.querySelector(`[data-seat-id="${seatNumber}"]`);
+                    
+                    if (targetSeat) {
+                        // ✅ TÌM THẤY GHẾ
+                        // Bỏ class cảnh báo - ghế trở lại trạng thái bình thường (có thể chọn)
+                        targetSeat.classList.remove('other-user-selecting');
+                        
+                        // 🗑️ XÓA KHỎI DANH SÁCH: Xóa khỏi danh sách ghế của người khác
+                        delete otherUsersSeats[seatNumber];
+                        
+                        // 🖨️ LOG THÔNG TIN (tuỳ chọn, để debug)
+                        console.log(`✅ Ghế ${seatNumber} đã được giải phóng`);
+                    }
+                }
+            };
+        }
+
         document.getElementById('confirmBooking').addEventListener('click', () => {
             // Chú thích: Kiểm tra xem người dùng đã chọn ghế chưa
             if (selectedSeats.length === 0) { alert("Vui lòng chọn ít nhất một ghế!"); return; }
 
             // Chú thích: Kiểm tra xem người dùng đã đăng nhập chưa
-            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-            if (!currentUser) {
+            const currentUserCheck = JSON.parse(sessionStorage.getItem('currentUser'));
+            if (!currentUserCheck) {
                 alert("Vui lòng đăng nhập để tiếp tục đặt vé!");
-                localStorage.setItem('returnUrl', window.location.href);
+                sessionStorage.setItem('returnUrl', window.location.href);
                 window.location.href = '../Login/Login.html';
                 return;
+            }
+
+            // ✨ THÔNG BÁO CHO CÁC TAB KHÁC: Người dùng hiện tại đã xác nhận đặt vé
+            // Gửi message rằng tất cả ghế của user này đã được chốt/đặt thành công
+            if (broadcastChannel && currentUser) {
+                selectedSeats.forEach(seat => {
+                    broadcastChannel.postMessage({
+                        type: 'SEAT_CONFIRMED', // Loại sự kiện: Ghế đã được đặt chắc chắn
+                        seatNumber: seat.SoGhe, // Số ghế
+                        MaKH: currentUser.MaKH  // ID khách hàng
+                    });
+                });
+                // Đóng BroadcastChannel vì không cần giao tiếp nữa
+                broadcastChannel.close();
             }
 
             // Chú thích: Lưu thông tin đặt vé tạm thời sang localStorage để xử lý tiếp ở trang Chọn Combo
@@ -553,7 +680,7 @@ async function loadBookingPage() {
                 selectedSeats: selectedSeats, // Danh sách đối tượng ghế đã chọn
                 totalTicketPrice: ticketTotal, // Tổng tiền của các ghế đã chọn (số)
                 showtime: showtime,           // Thông tin suất chiếu (phòng, phim, thời gian)
-                currentUser: currentUser      // Người dùng thực hiện đặt vé
+                currentUser: currentUserCheck      // Người dùng thực hiện đặt vé
             };
             localStorage.setItem('pendingBooking', JSON.stringify(pendingBooking));
 
@@ -565,13 +692,81 @@ async function loadBookingPage() {
             window.location.href = '../Combo_BapNuoc/Combo.html';
         });
 
-        // Zoom ghế
+        // Zoom ghế + tự co vừa màn hình mobile
         let currentScale = 1;
+        let baseFitScale = 1;
         const seatMap = document.getElementById('seatMap');
+        const seatMapWrapper = document.querySelector('.seat-map-wrapper');
+
+        const applySeatMapScale = () => {
+            if (!seatMap) return;
+            seatMap.style.transform = `scale(${currentScale})`;
+            if (seatMapWrapper) {
+                const scaledH = seatMap.offsetHeight * currentScale;
+                seatMapWrapper.style.minHeight = `${scaledH + 24}px`;
+            }
+        };
+
+        const fitSeatMapToScreen = () => {
+            if (!seatMap || !seatMapWrapper || window.innerWidth >= 768) {
+                currentScale = 1;
+                baseFitScale = 1;
+                applySeatMapScale();
+                return;
+            }
+            seatMap.style.transform = 'scale(1)';
+            const mapW = seatMap.scrollWidth;
+            const available = seatMapWrapper.clientWidth - 8;
+            baseFitScale = mapW > available ? Math.max(0.45, available / mapW) : 1;
+            currentScale = baseFitScale;
+            applySeatMapScale();
+        };
+
         if (seatMap) {
-            document.getElementById('zoomIn').onclick = () => { currentScale = Math.min(currentScale + 0.1, 1.5); seatMap.style.transform = `scale(${currentScale})`; };
-            document.getElementById('zoomOut').onclick = () => { currentScale = Math.max(currentScale - 0.1, 0.5); seatMap.style.transform = `scale(${currentScale})`; };
+            requestAnimationFrame(() => {
+                fitSeatMapToScreen();
+                setTimeout(fitSeatMapToScreen, 100);
+            });
+            window.addEventListener('resize', () => {
+                clearTimeout(seatMap._resizeTimer);
+                seatMap._resizeTimer = setTimeout(fitSeatMapToScreen, 150);
+            });
+            const zoomInBtn = document.getElementById('zoomIn');
+            const zoomOutBtn = document.getElementById('zoomOut');
+            if (zoomInBtn) {
+                zoomInBtn.onclick = () => {
+                    currentScale = Math.min(currentScale + 0.08, 1.5);
+                    applySeatMapScale();
+                };
+            }
+            if (zoomOutBtn) {
+                zoomOutBtn.onclick = () => {
+                    currentScale = Math.max(currentScale - 0.08, baseFitScale * 0.85);
+                    applySeatMapScale();
+                };
+            }
         }
+
+        // ============================================================
+        // ✨ TỰ ĐỘNG GIẢI PHÓNG GHẾ KHI RỜI TRANG
+        // ============================================================
+        // Khi người dùng rời khỏi trang (đóng tab, quay lại, v.v.) mà chưa xác nhận đặt vé,
+        // cần thông báo cho các tab khác biết để họ có thể chọn lại những ghế này.
+        window.addEventListener('beforeunload', () => {
+            // Gửi tín hiệu SEAT_DESELECTED cho tất cả ghế được chọn nhưng chưa xác nhận
+            if (broadcastChannel && currentUser && selectedSeats.length > 0) {
+                selectedSeats.forEach(seat => {
+                    broadcastChannel.postMessage({
+                        type: 'SEAT_DESELECTED', // Loại sự kiện: Ghế được giải phóng
+                        seatNumber: seat.SoGhe, // Số ghế
+                        MaKH: currentUser.MaKH  // ID khách hàng
+                    });
+                });
+                // Đóng channel sau khi gửi tín hiệu
+                broadcastChannel.close();
+            }
+        });
+
     } catch (error) { console.error(error); }
 }
 
@@ -634,7 +829,7 @@ async function loadHistoryPage() {
     const historyList = document.getElementById('historyList');
     if (!historyList || !window.location.pathname.includes('History.html')) return;
 
-    const user = JSON.parse(localStorage.getItem('currentUser'));
+    const user = JSON.parse(sessionStorage.getItem('currentUser'));
     if (!user) {
         historyList.innerHTML = '<div class="no-history">Vui lòng <a href="../Login/Login.html" style="color: #ff3d49;">đăng nhập</a> để xem lịch sử.</div>';
         return;
@@ -665,14 +860,14 @@ async function loadHistoryPage() {
             item.className = 'history-item-bar';
             const date = new Date(inv.NgayDat);
             item.innerHTML = `
-                <div class="history-info" style="padding: 0 25px; flex: 1; display: flex; justify-content: space-between; align-items: center;">
-                    <div style="flex: 1; cursor: pointer;" class="history-detail-trigger">
-                        <div class="movie-name" style="font-size: 17px; font-weight: 800; color: #fff; text-transform: uppercase;">${inv.TenPhim || 'PHIM ĐÃ XEM'}</div>
-                        <div class="booking-time" style="font-size: 12px; color: #aaa; margin-top: 4px;">
+                <div class="history-info">
+                    <div class="history-detail-trigger">
+                        <div class="movie-name">${inv.TenPhim || 'PHIM ĐÃ XEM'}</div>
+                        <div class="booking-time">
                             ${date.toLocaleDateString('vi-VN')} | ${date.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })} | ${inv.PhuongThuc || ''}
                         </div>
                     </div>
-                    <div class="history-amount" style="font-size: 19px; font-weight: 900; color: #fff;">${formatVND(inv.TongTien)}</div>
+                    <div class="history-amount">${formatVND(inv.TongTien)}</div>
                     <button type="button" class="btn-view-ticket" title="Xem mã QR vé">
                         <i class="fa-solid fa-qrcode"></i> XEM VÉ
                     </button>

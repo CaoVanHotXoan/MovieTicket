@@ -1936,11 +1936,11 @@ async function renderPayments() {
                         </div>
                         <h4 class="font-black text-gray-900 text-lg uppercase tracking-tight">${p.TenPhuongThuc}</h4>
                         
-                        <div class="mt-6 flex gap-2 invisible group-hover:visible translate-y-2 group-hover:translate-y-0 transition-all opacity-0 group-hover:opacity-100">
-                            <button onclick="window.editPayment(${p.MaThanhToan})" class="bg-blue-50 text-blue-600 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 hover:bg-blue-100 transition-colors">
+                        <div class="mt-4 flex gap-2">
+                            <button onclick="window.editPayment(${p.MaThanhToan})" class="bg-blue-50 text-blue-600 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 hover:bg-blue-100 transition-colors border border-blue-100">
                                 <i data-lucide="edit" class="w-3 h-3"></i> Sửa
                             </button>
-                            <button onclick="window.deletePayment(${p.MaThanhToan})" class="bg-red-50 text-red-600 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 hover:bg-red-100 transition-colors">
+                            <button onclick="window.deletePayment(${p.MaThanhToan})" class="bg-red-50 text-red-600 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 hover:bg-red-100 transition-colors border border-red-100">
                                 <i data-lucide="trash-2" class="w-3 h-3"></i> Xóa
                             </button>
                         </div>
@@ -2255,7 +2255,7 @@ window.deleteProductCategory = async (id) => {
 // --- KHỞI TẠO ỨNG DỤNG (APP INITIALIZATION) ---
 document.getElementById('logout-btn')?.addEventListener('click', () => {
     if (confirm('Thoát hệ thống quản trị và về trang chủ?')) {
-        localStorage.removeItem('currentUser');
+        sessionStorage.removeItem('currentUser');
         window.location.href = 'index.html';
     }
 });

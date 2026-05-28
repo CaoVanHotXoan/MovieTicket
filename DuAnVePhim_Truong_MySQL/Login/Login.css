@@ -1,4 +1,5 @@
 /* style.css */
+/* Mobile-First Approach */
 /* Reset lại padding/margin cơ bản của trình duyệt */
 * {
     margin: 0;
@@ -7,18 +8,19 @@
     font-family: 'Arial', sans-serif;
 }
 
-/* Style cho background chứa nội dung */
-body {
+body,
+body.login-page {
+    min-height: 100vh;
+    min-height: 100dvh;
     height: 100vh;
     display: flex;
     justify-content: center;
-    /* Canh giữa theo chiều ngang */
     align-items: center;
-    /* Canh giữa theo chiều dọc */
     position: relative;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
     background-color: #000;
-    /* Nền đen mặc định của phong cách rạp chiếu phim */
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
 }
 
 /* Lớp ảo làm background với hiệu ứng làm mờ */
@@ -28,145 +30,195 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    /* Sử dụng hình ảnh máy quay phim mới tạo */
     background: url('bg.png') no-repeat center center;
     background-size: cover;
-    /* Làm mờ các chi tiết phía sau nhưng vẫn giữ không gian rạp phim */
     filter: blur(10px);
     z-index: 1;
-    /* Hiển thị phía dưới form đăng nhập (z-index nhỏ hơn) */
 }
 
 /* Khung đăng nhập nằm chính giữa trang */
 .login-container {
     position: relative;
     z-index: 2;
-    /* Nằm trên lớp background-blur */
     background-color: #ffffff;
-    /* Khung màu trắng theo yêu cầu */
     color: #000000;
-    /* Chữ màu đen theo yêu cầu */
-    padding: 40px;
-    border-radius: 10px;
-    box-shadow: 0 0 25px rgba(0, 0, 0, 0.7);
-    /* Đổ bóng sâu để nổi bật form */
-    width: 400px;
-    max-width: 90%;
+    padding: 1.875rem;
+    /* 30px */
+    border-radius: 0.625rem;
+    /* 10px */
+    box-shadow: 0 0 1.5625rem rgba(0, 0, 0, 0.7);
+    width: 90%;
+    max-width: 25rem;
+    /* 400px */
     text-align: center;
 }
 
 .login-container h2 {
-    margin-bottom: 25px;
+    margin-bottom: 1.25rem;
+    /* 20px */
     text-transform: uppercase;
-    font-size: 24px;
-    letter-spacing: 1px;
+    font-size: 1.25rem;
+    /* 20px */
+    letter-spacing: 0.0625rem;
 }
 
-/* Các trường input bọc bên ngoài form */
 .input-group {
-    margin-bottom: 15px;
+    margin-bottom: 0.9375rem;
+    /* 15px */
 }
 
-/* Bảng text nhập thông tin tài khoản và mật khẩu */
 .input-group input,
 .input-group select {
     width: 100%;
-    padding: 12px 15px;
+    padding: 0.75rem 0.9375rem;
+    /* 12px 15px */
     border: 1px solid #ccc;
-    /* Viền bảng text */
-    border-radius: 5px;
+    border-radius: 0.3125rem;
+    /* 5px */
     outline: none;
-    font-size: 15px;
+    font-size: 0.9375rem;
+    /* 15px */
     color: #000;
-    /* Chữ gõ vào hiển thị màu đen */
 }
 
 .input-group input:focus,
 .input-group select:focus {
     border-color: #ff0000;
-    /* Nhấn nét biên màu đỏ khi người dùng bấm vào */
 }
 
-/* Nhóm các nút bấm (Đăng nhập, Đăng ký) dàn ngang */
 .button-group {
     display: flex;
-    justify-content: space-between;
-    gap: 15px;
-    margin-top: 25px;
+    flex-direction: column;
+    /* Stack on small mobile screens */
+    gap: 0.625rem;
+    /* 10px */
+    margin-top: 1.25rem;
+    /* 20px */
 }
 
-/* Nút bấm */
 .btn {
-    flex: 1;
-    /* Chiếm đều chiều rộng cho các nút */
-    padding: 12px;
+    width: 100%;
+    /* Full width on mobile */
+    padding: 0.75rem;
+    /* 12px */
     background-color: #000000;
-    /* Khung đen theo yêu cầu */
     color: #ffffff;
-    /* Chữ màu trắng theo yêu cầu */
     border: 2px solid #000000;
-    border-radius: 5px;
+    border-radius: 0.3125rem;
+    /* 5px */
     cursor: pointer;
-    font-size: 15px;
+    font-size: 0.9375rem;
+    /* 15px */
     font-weight: bold;
     transition: all 0.3s ease;
-    /* Hiệu ứng chuyển động mượt mà */
 }
 
-/* Hiệu ứng hover các nút bấm (Hover) chuyển màu */
 .btn:hover {
     background-color: #ff0000;
-    /* Nền chuyển đỏ khi di chuột */
     border-color: #ff0000;
 }
 
-/* Dòng chữ Quên mật khẩu bên dưới */
 .forgot-password {
     display: block;
-    margin-top: 20px;
+    margin-top: 1.25rem;
+    /* 20px */
     color: #333333;
-    /* Màu đen nhạt/xám đậm ban đầu */
     text-decoration: none;
-    /* Bỏ gạch chân link */
-    font-size: 14px;
+    font-size: 0.875rem;
+    /* 14px */
     font-weight: bold;
     transition: color 0.3s ease;
-    /* Tạo độ mượt khi thay đổi màu */
 }
 
-/* Hiệu ứng chữ chuyển sang màu đỏ khi chuột đè lên */
 .forgot-password:hover {
     color: #ff0000;
 }
 
-/* Nút quay về trang chủ */
 .back-home {
     position: absolute;
-    top: 20px;
-    left: 20px;
+    top: 0.625rem;
+    /* 10px */
+    left: 0.625rem;
+    /* 10px */
     z-index: 10;
     text-decoration: none;
     color: #ffffff;
-    font-size: 16px;
+    font-size: 0.875rem;
+    /* 14px */
     font-weight: bold;
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 10px 20px;
+    gap: 0.3125rem;
+    /* 5px */
+    padding: 0.5rem 0.9375rem;
+    /* 8px 15px */
     background: rgba(0, 0, 0, 0.6);
     border: 1px solid rgba(255, 255, 255, 0.3);
-    border-radius: 50px;
+    border-radius: 3.125rem;
+    /* 50px */
     transition: all 0.3s ease;
     backdrop-filter: blur(5px);
 }
 
 .back-home span {
-    font-size: 20px;
+    font-size: 1.125rem;
+    /* 18px */
 }
 
 .back-home:hover {
     background: #ff0000;
     border-color: #ff0000;
-    transform: translateX(-5px);
-    box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
+    transform: translateX(-0.3125rem);
+    box-shadow: 0 0 0.9375rem rgba(255, 0, 0, 0.5);
+}
+
+/* ========================================================
+   TABLET & DESKTOP BREAKPOINT (768px+)
+======================================================== */
+@media screen and (min-width: 768px) {
+    .login-container {
+        padding: 2.5rem;
+        /* 40px */
+    }
+
+    .login-container h2 {
+        font-size: 1.5rem;
+        /* 24px */
+        margin-bottom: 1.5625rem;
+        /* 25px */
+    }
+
+    .button-group {
+        flex-direction: row;
+        /* Horizontal on larger screens */
+        justify-content: space-between;
+        gap: 0.9375rem;
+        /* 15px */
+        margin-top: 1.5625rem;
+        /* 25px */
+    }
+
+    .btn {
+        flex: 1;
+        /* Chiếm đều chiều rộng cho các nút */
+        width: auto;
+    }
+
+    .back-home {
+        top: 1.25rem;
+        /* 20px */
+        left: 1.25rem;
+        /* 20px */
+        font-size: 1rem;
+        /* 16px */
+        gap: 0.5rem;
+        /* 8px */
+        padding: 0.625rem 1.25rem;
+        /* 10px 20px */
+    }
+
+    .back-home span {
+        font-size: 1.25rem;
+        /* 20px */
+    }
 }
