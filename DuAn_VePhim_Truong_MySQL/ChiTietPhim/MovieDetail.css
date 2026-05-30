@@ -280,7 +280,10 @@ body {
     position: relative;
 }
 
-.video-wrapper iframe {
+.video-wrapper iframe,
+.video-wrapper video,
+.trailer-player-container iframe,
+.trailer-player-container video {
     position: absolute;
     top: 0;
     left: 0;

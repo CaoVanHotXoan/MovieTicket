@@ -316,27 +316,25 @@ async function renderMovies() {
 window.watchTrailer = (url) => {
     if (!url) return alert('Không có trailer cho phim này');
 
-    // Hàm trích xuất Video ID từ nhiều định dạng link YouTube (watch, short link, embed)
     const getYoutubeId = (url) => {
-        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-        const match = url.match(regExp);
-        return (match && match[2].length === 11) ? match[2] : null;
+        try {
+            if (url.includes('watch?v=')) return new URL(url).searchParams.get('v');
+            if (url.includes('youtu.be/')) return url.split('youtu.be/')[1].split(/[?&]/)[0];
+            if (url.includes('embed/')) return url.split('embed/')[1].split(/[?&]/)[0];
+        } catch (error) {
+            return null;
+        }
+        return null;
     };
 
     const videoId = getYoutubeId(url);
-    if (!videoId) return alert('Link YouTube không hợp lệ. Bạn hãy dán link xem trực tiếp trên YouTube (vd: https://www.youtube.com/watch?v=...)');
+    if (!videoId) return alert('Link trailer không hợp lệ.');
 
-    const embedUrl = `https://www.youtube.com/embed/${videoId}`;
-
-    showModal(`
-        <div class="relative pt-[56.25%] bg-black rounded-lg overflow-hidden">
-            <button onclick="window.hideModal()" class="absolute top-2 right-2 z-10 p-2 bg-black/50 text-white rounded-full hover:bg-black transition-colors">
-                <i data-lucide="x" class="w-6 h-6"></i>
-            </button>
-            <iframe class="absolute inset-0 w-full h-full" src="${embedUrl}?autoplay=1" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-        </div>
-    `);
-    createIcons(iconConfig);
+    const youtubeUrl = `https://www.youtube.com/watch?v=${videoId}`;
+    const newWindow = window.open(youtubeUrl, '_blank', 'noopener');
+    if (!newWindow) {
+        window.location.href = youtubeUrl;
+    }
 };
 
 window.hideModal = hideModal;
