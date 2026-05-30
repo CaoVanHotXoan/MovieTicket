@@ -322,24 +322,36 @@ async function loadMovieDetail() {
                 <li><strong>Thể loại:</strong> ${movie.TenLoai || "Hành động"}</li>
             `;
 
-            // Xử lý Trailer Modal
+            // Xử lý Trailer: mở YouTube trong tab mới
             const trailerBtn = document.getElementById('movieTrailerBtn');
-            const modal = document.getElementById('trailerModal');
-            const closeModal = document.getElementById('closeModal');
-            const iframe = document.getElementById('trailerIframe');
-            if (trailerBtn && modal && iframe) {
+            const getYoutubeId = (url) => {
+                try {
+                    if (url.includes('watch?v=')) return new URL(url).searchParams.get('v');
+                    if (url.includes('youtu.be/')) return url.split('youtu.be/')[1].split(/[?&]/)[0];
+                    if (url.includes('embed/')) return url.split('embed/')[1].split(/[?&]/)[0];
+                } catch (error) {
+                    return null;
+                }
+                return null;
+            };
+
+            if (trailerBtn) {
                 trailerBtn.addEventListener('click', (e) => {
                     e.preventDefault();
-                    let trailerUrl = movie.Trailer;
-                    if (trailerUrl) {
-                        if (trailerUrl.includes('watch?v=')) trailerUrl = trailerUrl.replace('watch?v=', 'embed/');
-                        else if (trailerUrl.includes('youtu.be/')) trailerUrl = trailerUrl.replace('youtu.be/', 'www.youtube.com/embed/');
-                        iframe.src = trailerUrl + "?autoplay=1";
-                        modal.classList.add('show');
-                    } else alert("Hiện chưa có trailer cho phim này.");
+                    const trailerUrl = movie.Trailer;
+                    if (!trailerUrl) {
+                        return alert("Hiện chưa có trailer cho phim này.");
+                    }
+                    const videoId = getYoutubeId(trailerUrl);
+                    if (!videoId) {
+                        return alert('Link trailer không hợp lệ.');
+                    }
+                    const youtubeUrl = `https://www.youtube.com/watch?v=${videoId}`;
+                    const newWindow = window.open(youtubeUrl, '_blank', 'noopener');
+                    if (!newWindow) {
+                        window.location.href = youtubeUrl;
+                    }
                 });
-                closeModal.onclick = () => { modal.classList.remove('show'); iframe.src = ""; };
-                window.onclick = (e) => { if (e.target === modal) { modal.classList.remove('show'); iframe.src = ""; } };
             }
 
             loadShowtimes(movieId, movie.TenPhim);
