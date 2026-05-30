@@ -9,6 +9,10 @@
     <link rel="stylesheet" href="Booking.css">
     <link rel="stylesheet" href="../Payment.css">
     <link rel="stylesheet" href="../responsive.css">
+    <!-- tự động load trang  -->
+    <!-- <meta http-equiv="refresh" content="5"> -->
+    <!-- Socket.io Client Library - Để nhận/gửi dữ liệu real-time -->
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
 </head>
 <body class="booking-page booking-flow">
     <!-- HEADER ĐẶT VÉ -->
@@ -60,7 +64,12 @@
             <div class="seat-legend" id="seatLegend">
                 <!-- Sẽ được Javascript render động từ CSDL -->
             </div>
-        </section>
+
+            <!-- THÔNG TIN REAL-TIME: Hiển thị ghế người dùng khác đang chọn -->
+            <div class="real-time-info" id="realtimeInfo" style="display: none;">
+                <h3>👥 Ghế đang được chọn bởi người dùng khác:</h3>
+                <div id="activeSeatList" style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px;"></div>
+            </div>
     </main>
 
     <!-- THANH THÀNH TIỀN (FOOTER) -->

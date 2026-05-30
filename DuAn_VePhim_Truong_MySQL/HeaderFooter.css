@@ -47,8 +47,8 @@ video {
 ======================================================== */
 .main-header {
     width: 100%;
-    position: fixed;
-    /* Fixed on mobile for easy navigation */
+    position: relative;
+    /* Relative on mobile to separate from banner */
     top: 0;
     left: 0;
     z-index: 100;

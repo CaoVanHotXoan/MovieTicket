@@ -3,13 +3,154 @@ import { createServer as createViteServer } from "vite";
 import path from "path";
 import fs from "fs";
 import crypto from "crypto";
+import { createServer as createHttpServer } from "http";
+import { Server as SocketIOServer } from "socket.io";
 import { pool as mysqlPool, testConnection, sql, poolWithRequest } from "./db/index.js";
 
 const app = express();
+// Tạo HTTP server để Socket.io có thể hoạt động
+const httpServer = createHttpServer(app);
+// Khởi tạo Socket.io với HTTP server
+const io = new SocketIOServer(httpServer, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"]
+  }
+});
+
 const PORT = 3015;
 
 // Middleware cho phép parse JSON trong body của request
 app.use(express.json());
+
+/**
+ * ========== QUẢN LÝ REAL-TIME BOOKING (Socket.io) ==========
+ * Lưu trữ trạng thái ghế và người dùng đang chọn ghế
+ */
+// Map lưu trữ: key = "movieId_roomId_date", value = { seatId: { userId, userName, timestamp } }
+const activeSeatSelections = new Map();
+
+// Map lưu trữ user sessions
+const userSessions = new Map(); // key = socketId, value = { userId, userName, movieId, roomId, date }
+
+/**
+ * Socket.io - Xử lý kết nối realtime từ client
+ */
+io.on("connection", (socket) => {
+  console.log(`🟢 Client kết nối: ${socket.id}`);
+
+  /**
+   * Sự kiện: Client gửi thông tin đăng nhập (userId, userName, movieId, roomId, date)
+   * Dùng để xác định người dùng đang booking phim nào, phòng nào
+   */
+  socket.on("login", (data) => {
+    const { userId, userName, movieId, roomId, date } = data;
+    // Lưu session người dùng
+    userSessions.set(socket.id, {
+      userId,
+      userName,
+      movieId,
+      roomId,
+      date
+    });
+
+    const roomKey = `${movieId}_${roomId}_${date}`;
+    socket.join(roomKey);
+
+    console.log(`📝 ${userName} (ID: ${userId}) bắt đầu booking phim ${movieId}, phòng ${roomId} (${date})`);
+  });
+
+  /**
+   * Sự kiện: Client chọn ghế (seat)
+   * Gửi thông tin ghế đang được chọn đến tất cả các client khác
+   */
+  socket.on("selectSeat", (data) => {
+    const { seatId, seatPrice, action } = data; // action: 'select' hoặc 'deselect'
+    const session = userSessions.get(socket.id);
+    
+    if (!session) return;
+
+    // Tạo key để xác định phòng chiếu (movieId_roomId_date)
+    const roomKey = `${session.movieId}_${session.roomId}_${session.date}`;
+    
+    if (!activeSeatSelections.has(roomKey)) {
+      activeSeatSelections.set(roomKey, {});
+    }
+
+    const seatMap = activeSeatSelections.get(roomKey);
+
+    if (action === "select") {
+      // Lưu trạng thái ghế được chọn bởi người dùng
+      seatMap[seatId] = {
+        userId: session.userId,
+        userName: session.userName,
+        timestamp: Date.now()
+      };
+      console.log(`✅ ${session.userName} chọn ghế: ${seatId}`);
+    } else if (action === "deselect") {
+      // Xóa trạng thái ghế khi người dùng hủy chọn
+      delete seatMap[seatId];
+      console.log(`❌ ${session.userName} hủy chọn ghế: ${seatId}`);
+    }
+
+    // 📡 Phát sự kiện đến tất cả client khác trong cùng suất chiếu
+    socket.to(roomKey).emit("seatUpdate", {
+      seatId,
+      action,
+      userName: session.userName,
+      userId: session.userId,
+      seatPrice,
+      movieId: session.movieId,
+      roomId: session.roomId,
+      date: session.date
+    });
+  });
+
+  /**
+   * Sự kiện: Client yêu cầu danh sách ghế đang được chọn hiện tại
+   */
+  socket.on("getActiveSeatSelections", (data) => {
+    const { movieId, roomId, date } = data;
+    const roomKey = `${movieId}_${roomId}_${date}`;
+    const seatMap = activeSeatSelections.get(roomKey) || {};
+    
+    // Gửi lại danh sách ghế đang được chọn
+    socket.emit("activeSeatSelections", seatMap);
+  });
+
+  /**
+   * Sự kiện: Client ngắt kết nối (tắt trình duyệt, rời trang, vv)
+   */
+  socket.on("disconnect", () => {
+    const session = userSessions.get(socket.id);
+    if (session) {
+      console.log(`🔴 ${session.userName} (ID: ${session.userId}) ngắt kết nối`);
+      
+      // Xóa tất cả ghế của người dùng này khi rời
+      const roomKey = `${session.movieId}_${session.roomId}_${session.date}`;
+      const seatMap = activeSeatSelections.get(roomKey);
+      
+      if (seatMap) {
+        Object.keys(seatMap).forEach(seatId => {
+          if (seatMap[seatId].userId === session.userId) {
+            delete seatMap[seatId];
+            // Thông báo cho các client khác trong cùng suất chiếu rằng ghế này đã được giải phóng
+            socket.to(roomKey).emit("seatUpdate", {
+              seatId,
+              action: "deselect",
+              userName: session.userName,
+              userId: session.userId,
+              movieId: session.movieId,
+              roomId: session.roomId,
+              date: session.date
+            });
+          }
+        });
+      }
+    }
+    userSessions.delete(socket.id);
+  });
+});
 
 
 
@@ -764,20 +905,75 @@ app.delete("/api/seats/:id", async (req, res) => {
 });
 
 
+// --- TẠM GIỮ GHẾ (TEMPORARY LOCK) ---
+interface LockedSeat {
+  MaSuat: number;
+  MaGhe: number;
+  expiresAt: number;
+  sessionKey: string;
+}
+let lockedSeatsStore: LockedSeat[] = [];
+
+// Cleanup expired seats periodically
+setInterval(() => {
+  const now = Date.now();
+  lockedSeatsStore = lockedSeatsStore.filter(s => s.expiresAt > now);
+}, 60000);
+
+app.post("/api/lock-seats", (req, res) => {
+  const { MaSuat, MaGheList, sessionKey, expiresAt } = req.body;
+  if (!MaSuat || !MaGheList || !sessionKey) {
+    return res.status(400).json({ error: "Thiếu dữ liệu" });
+  }
+
+  // Remove existing locks for this session first to prevent duplicates
+  lockedSeatsStore = lockedSeatsStore.filter(s => s.sessionKey !== sessionKey);
+
+  const expiry = expiresAt || Date.now() + 5 * 60 * 1000;
+
+  MaGheList.forEach((MaGhe: number) => {
+    lockedSeatsStore.push({ MaSuat: Number(MaSuat), MaGhe: Number(MaGhe), expiresAt: expiry, sessionKey });
+  });
+
+  res.json({ success: true });
+});
+
+app.post("/api/unlock-seats", (req, res) => {
+  const { sessionKey } = req.body;
+  if (!sessionKey) {
+    return res.status(400).json({ error: "Thiếu sessionKey" });
+  }
+
+  lockedSeatsStore = lockedSeatsStore.filter(s => s.sessionKey !== sessionKey);
+  res.json({ success: true });
+});
+
 app.get("/api/booked-seats/:showtimeId", async (req, res) => {
   const { showtimeId } = req.params;
+  const suatIdNum = Number(showtimeId);
+  const now = Date.now();
+
+  // Get temporarily locked seats
+  const locked = lockedSeatsStore
+    .filter(s => s.MaSuat === suatIdNum && s.expiresAt > now)
+    .map(s => s.MaGhe);
+
   try {
     const pool = await getPool();
     if (useMockData) {
       const booked = mockInvoiceDetails
-        .filter(d => d.MaSuat == Number(showtimeId))
+        .filter(d => d.MaSuat == suatIdNum)
         .map(d => d.MaGhe);
-      return res.json(booked);
+      const combined = Array.from(new Set([...booked, ...locked]));
+      return res.json(combined);
     }
     const result = await pool!.request()
       .input('MaSuat', sql.Int, showtimeId)
       .execute("sp_GetBookedSeats");
-    res.json(result.recordset.map(r => r.MaGhe));
+
+    const dbBooked = result.recordset.map(r => r.MaGhe);
+    const combined = Array.from(new Set([...dbBooked, ...locked]));
+    res.json(combined);
   } catch (err: any) {
     res.status(500).json({ error: err.message });
   }
@@ -1928,9 +2124,10 @@ async function startServer() {
     });
   }
 
-  // Lắng nghe các yêu cầu kết nối
-  app.listen(PORT, "0.0.0.0", () => {
+  // Lắng nghe các yêu cầu kết nối (dùng httpServer để Socket.io hoạt động)
+  httpServer.listen(PORT, "0.0.0.0", () => {
     console.log(`Server running on http://localhost:${PORT}`);
+    console.log(`🔌 Socket.io đã kích hoạt - Real-time seat booking ready!`);
   });
 }
 

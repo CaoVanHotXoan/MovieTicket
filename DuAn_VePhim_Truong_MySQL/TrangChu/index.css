@@ -18,13 +18,15 @@ body {
     width: 100%;
     /* Mobile: tỷ lệ 16:9 = 56.25% */
     /* padding-top: 56.25%; */
-    padding-left: 0 !important;  /* Ép viền trái banner sát màn hình */
-    padding-right: 0 !important; /* Ép viền phải banner sát màn hình */
-    padding-top: 35%;
+    padding-left: 0 !important;
+    /* Ép viền trái banner sát màn hình */
+    padding-right: 0 !important;
+    /* Ép viền phải banner sát màn hình */
+    padding-top: 30%;
     overflow: hidden;
     background-color: #000;
     /* Đẩy xuống tránh header cố định */
-    margin-top: 3.25rem;
+    margin-top: 0;
 }
 
 .banner-slider {
@@ -298,7 +300,9 @@ body {
 
     /* Tablet: tỷ lệ 16:9 vẫn giữ, margin tăng thêm */
     .banner-section {
-        margin-top: 3.5rem;
+        padding-top: 30%;
+        /* tỷ lệ 1920:750 */
+        margin-top: 0;
     }
 
     .movie-section {
@@ -336,7 +340,7 @@ body {
 
     /* Desktop: header là absolute, banner fullscreen — thu ngắn padding-top */
     .banner-section {
-        padding-top: 39.0625%;
+        padding-top: 30%;
         /* tỷ lệ 1920:750 */
         margin-top: 0;
     }

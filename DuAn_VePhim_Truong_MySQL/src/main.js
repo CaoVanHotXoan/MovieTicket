@@ -2255,7 +2255,7 @@ window.deleteProductCategory = async (id) => {
 // --- KHỞI TẠO ỨNG DỤNG (APP INITIALIZATION) ---
 document.getElementById('logout-btn')?.addEventListener('click', () => {
     if (confirm('Thoát hệ thống quản trị và về trang chủ?')) {
-        sessionStorage.removeItem('currentUser');
+        localStorage.removeItem('currentUser');
         window.location.href = 'index.html';
     }
 });

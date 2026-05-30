@@ -54,7 +54,7 @@ body {
     .history-main,
     .about-main,
     .contact-main {
-        padding-top: max(5rem, calc(var(--header-mobile-h) + 1.25rem));
+        padding-top: 1.25rem;
     }
 
     /* Banner trang chủ tự xử lý margin-top trong index.css */

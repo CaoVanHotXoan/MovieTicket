@@ -391,9 +391,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Hàm dọn dẹp các biến liên quan đến booking trong localStorage
     function clearBookingStorage() {
+        const sessionKey = localStorage.getItem('bookingSessionKey');
+        if (sessionKey) {
+            // Sử dụng Blob và sendBeacon để gửi dữ liệu JSON một cách an toàn khi tắt tab/chuyển trang
+            const data = JSON.stringify({ sessionKey });
+            const blob = new Blob([data], { type: 'application/json' });
+            navigator.sendBeacon('/api/unlock-seats', blob);
+        }
         localStorage.removeItem('pendingBooking');
         localStorage.removeItem('bookingExpiryTime');
+        localStorage.removeItem('bookingSessionKey');
     }
+
+    // Mở khóa ghế nếu người dùng vô tình đóng tab hoặc rời khỏi trang Combo mà chưa thanh toán
+    window.addEventListener('beforeunload', (e) => {
+        // Chỉ chạy clear nếu pendingBooking vẫn còn (chưa thanh toán xong)
+        if (localStorage.getItem('pendingBooking')) {
+            clearBookingStorage();
+        }
+    });
 
     // PHẦN 2: Khởi chạy — tải sản phẩm từ database
     loadProducts();
